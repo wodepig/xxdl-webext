@@ -4,6 +4,7 @@
     <div class="bg-red-200 p-5">
       hello
     </div>
+    <button class="btn btn-primary">Primary</button>
      <img :src="someCoolImage" alt="一个非常酷的图像" />
     <h2 class="text-center">
       Welcome to your 888

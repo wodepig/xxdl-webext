@@ -1,3 +1,5 @@
+## 安装daisyui没样式
+需要先升级tailwindcss到v4版本, 然后安装daisyui就行了
 ## 升级tailwindcss v4报错
 ```
 🟣 Plasmo v0.90.5
