@@ -1,33 +1,16 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-pnpm dev
-# or
-npm run dev
+## 升级tailwindcss v4报错
 ```
-
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
-
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
-
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
-
-## Making production build
-
-Run the following:
-
-```bash
-pnpm build
-# or
-npm run build
+🟣 Plasmo v0.90.5
+🔴 The Browser Extension Framework
+🔵 INFO   | Starting the extension development server...
+🔵 INFO   | Building for target: chrome-mv3
+🔵 INFO   | Loaded environment variables from: []
+(node:25780) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+🔴 ERROR  | Build failed. To debug, run plasmo dev --verbose.
+🔴 ERROR  | Could not resolve module "node:module" from "D:\\ws\_project\\xxdl-webext\\node\_modules\\.pnpm\\jiti@2.6.1\\node\_modules\\jiti\\lib\\jiti.cjs"
 ```
+** 讨论:**
+https://github.com/PlasmoHQ/plasmo/issues/1188
+解决方案: scripts/patch.js 脚本
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
-
-## Submit to the webstores
-
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
