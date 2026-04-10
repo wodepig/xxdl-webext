@@ -1,46 +1,11 @@
 <template>
-  <div>
-    你好
+  <div class="bg-blue-200">
+    扩展页面可见
+    <img :src="someCoolImage" alt="一个非常酷的图像" />
   </div>
 </template>
 
-<style>
-.container {
-  min-width: 470px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 47px;
-}
-.text-center {
-  text-align: center;
-}
-.action {
-  color: #470;
-  font-weight: bold;
-}
-</style>
-
 <script setup lang="ts">
-import { reactive } from "vue"
-import type { App } from "vue"
-
-const state = reactive({ count: 0, action: null })
-
-function increment() {
-  state.count++
-  state.action = "increment"
-}
-
-function decrement() {
-  state.count--
-  state.action = "decrement"
-}
-
-defineOptions({
-  prepare(app: App) {
-    // Use any plugins here:
-    // app.use
-  }
-})
+import '../style.css'
+import someCoolImage from "data-base64:/assets/xxdl-wx-qr.jpg"
 </script>

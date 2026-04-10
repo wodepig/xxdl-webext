@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "with-locales-i18n-en",
+    "description": "扩展名称。"
+  },
+  "extensionDescription": {
+    "message": "english desc！",
+    "description": "扩展描述。"
+  },
+  "popup": {
+    "message": "popup message！",
+    "description": "弹出消息。"
+  }
+}

@@ -13,6 +13,7 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "@plasmohq/storage": "^1.15.0",
     "plasmo": "0.90.5",
     "vue": "3.5.32"
   },
@@ -27,6 +28,7 @@
     "typescript": "6.0.2"
   },
   "manifest": {
+    "default_locale": "en",
     "host_permissions": [
       "https://*/*"
     ]

@@ -1,8 +1,10 @@
 <template>
   <div>
+    <h2>{{ extensionName }}</h2>
     <div class="bg-red-200 p-5">
       hello
     </div>
+     <img :src="someCoolImage" alt="一个非常酷的图像" />
     <h2 class="text-center">
       Welcome to your 888
       <a href="https://www.plasmo.com" target="_blank">Plasmo</a> Extension!
@@ -43,7 +45,9 @@
 import "./style.css"
 import { reactive } from "vue"
 import type { App } from "vue"
+import someCoolImage from "data-base64:/assets/xxdl-wx-qr.jpg"
 
+const extensionName = chrome.i18n.getMessage("extensionName")
 const state = reactive({ count: 0, action: null })
 
 function increment() {

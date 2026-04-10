@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "筱筱动力",
+    "description": "扩展名称。"
+  },
+  "extensionDescription": {
+    "message": "示例使用 locales + i18n！",
+    "description": "扩展描述。"
+  },
+  "popup": {
+    "message": "逻辑是智慧的开始，而不是结束。",
+    "description": "弹出消息。"
+  }
+}
