@@ -1,0 +1,258 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <style>
+      body {
+        width: 470px;
+        min-height: 400px;
+      }
+    </style>
+  </head>
+  <body class="bg-base-200">
+    <div class="p-4">
+      <!-- 头部区域 -->
+      <div class="flex items-center gap-3 mb-4">
+        <a href="index.html" class="btn btn-ghost btn-sm btn-circle" title="返回首页">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </a>
+        <h1 class="text-lg font-bold">设置</h1>
+      </div>
+
+      <!-- 后端地址配置 -->
+      <div class="card bg-base-100 shadow-sm mb-4">
+        <div class="card-body">
+          <h2 class="card-title text-base flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+            </svg>
+            后端地址配置
+          </h2>
+          <p class="text-sm text-base-content/70 mb-3">配置数据发送的目标服务器地址</p>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">后端 URL</span>
+            </label>
+            <input
+              type="url"
+              id="backend-url"
+              placeholder="https://api.example.com/collect"
+              class="input input-bordered w-full"
+            />
+            <label class="label">
+              <span class="label-text-alt text-base-content/50">支持 http:// 或 https:// 协议</span>
+            </label>
+          </div>
+
+          <!-- 测试连接按钮和状态 -->
+          <div class="flex items-center gap-2 mt-2">
+            <button id="test-connection-btn" class="btn btn-outline btn-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              测试连接
+            </button>
+            <span id="connection-status" class="hidden"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 请求密钥配置 -->
+      <div class="card bg-base-100 shadow-sm mb-4">
+        <div class="card-body">
+          <h2 class="card-title text-base flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            请求密钥配置
+          </h2>
+          <p class="text-sm text-base-content/70 mb-3">配置访问后端 API 的认证密钥</p>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">API Key</span>
+            </label>
+            <div class="relative">
+              <input
+                type="password"
+                id="api-key"
+                placeholder="请输入请求密钥"
+                class="input input-bordered w-full pr-10"
+              />
+              <button
+                type="button"
+                id="toggle-key-visibility"
+                class="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle"
+                title="显示/隐藏密钥"
+              >
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              </button>
+            </div>
+            <label class="label">
+              <span class="label-text-alt text-base-content/50">密钥将用于请求头 Authorization 字段</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 保存按钮 -->
+      <button id="save-btn" class="btn btn-primary w-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+        </svg>
+        保存设置
+      </button>
+
+      <!-- 提示信息 -->
+      <div id="toast" class="toast toast-center toast-middle hidden">
+        <div id="toast-content" class="alert">
+          <span id="toast-message"></span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // DOM 元素
+      const backendUrlInput = document.getElementById('backend-url');
+      const apiKeyInput = document.getElementById('api-key');
+      const testConnectionBtn = document.getElementById('test-connection-btn');
+      const connectionStatus = document.getElementById('connection-status');
+      const toggleKeyVisibilityBtn = document.getElementById('toggle-key-visibility');
+      const eyeIcon = document.getElementById('eye-icon');
+      const eyeOffIcon = document.getElementById('eye-off-icon');
+      const saveBtn = document.getElementById('save-btn');
+      const toast = document.getElementById('toast');
+      const toastContent = document.getElementById('toast-content');
+      const toastMessage = document.getElementById('toast-message');
+
+      // 加载保存的设置
+      function loadSettings() {
+        const savedUrl = localStorage.getItem('backendUrl') || '';
+        const savedKey = localStorage.getItem('apiKey') || '';
+        backendUrlInput.value = savedUrl;
+        apiKeyInput.value = savedKey;
+      }
+
+      // 显示提示
+      function showToast(message, type = 'info') {
+        toastMessage.textContent = message;
+        toastContent.className = `alert alert-${type}`;
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3000);
+      }
+
+      // 显示连接状态
+      function showConnectionStatus(message, type) {
+        connectionStatus.textContent = message;
+        connectionStatus.className = `badge badge-${type}`;
+        connectionStatus.classList.remove('hidden');
+      }
+
+      // 隐藏连接状态
+      function hideConnectionStatus() {
+        connectionStatus.classList.add('hidden');
+      }
+
+      // 测试连接
+      async function testConnection() {
+        const url = backendUrlInput.value.trim();
+
+        if (!url) {
+          showConnectionStatus('请输入后端地址', 'error');
+          return;
+        }
+
+        // 简单的 URL 格式验证
+        try {
+          new URL(url);
+        } catch {
+          showConnectionStatus('URL 格式不正确', 'error');
+          return;
+        }
+
+        testConnectionBtn.disabled = true;
+        testConnectionBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 测试中...`;
+        hideConnectionStatus();
+
+        // 模拟测试连接（实际扩展中会发送真实请求）
+        setTimeout(() => {
+          testConnectionBtn.disabled = false;
+          testConnectionBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            测试连接
+          `;
+
+          // 模拟测试结果（实际应根据真实请求结果）
+          const isSuccess = Math.random() > 0.3; // 70% 成功率模拟
+          if (isSuccess) {
+            showConnectionStatus('✓ 连接成功', 'success');
+          } else {
+            showConnectionStatus('✗ 连接失败', 'error');
+          }
+        }, 1500);
+      }
+
+      // 切换密钥显示/隐藏
+      function toggleKeyVisibility() {
+        const isPassword = apiKeyInput.type === 'password';
+        apiKeyInput.type = isPassword ? 'text' : 'password';
+        eyeIcon.classList.toggle('hidden', !isPassword);
+        eyeOffIcon.classList.toggle('hidden', isPassword);
+      }
+
+      // 保存设置
+      function saveSettings() {
+        const url = backendUrlInput.value.trim();
+        const key = apiKeyInput.value.trim();
+
+        if (!url) {
+          showToast('请输入后端地址', 'warning');
+          return;
+        }
+
+        if (!key) {
+          showToast('请输入请求密钥', 'warning');
+          return;
+        }
+
+        // 验证 URL 格式
+        try {
+          new URL(url);
+        } catch {
+          showToast('后端地址格式不正确', 'error');
+          return;
+        }
+
+        // 保存到 localStorage（实际扩展中使用 chrome.storage）
+        localStorage.setItem('backendUrl', url);
+        localStorage.setItem('apiKey', key);
+
+        showToast('设置已保存', 'success');
+      }
+
+      // 事件监听
+      testConnectionBtn.addEventListener('click', testConnection);
+      toggleKeyVisibilityBtn.addEventListener('click', toggleKeyVisibility);
+      saveBtn.addEventListener('click', saveSettings);
+
+      // 页面加载时读取设置
+      loadSettings();
+    </script>
+  </body>
+</html>

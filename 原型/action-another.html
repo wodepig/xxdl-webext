@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <style>
+      body {
+        width: 470px;
+        min-height: 400px;
+      }
+      /* tabs 样式优化 - 与卡片风格统一 */
+      .tabs-custom {
+        display: flex;
+        gap: 8px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid hsl(var(--b3));
+      }
+      .tabs-custom .tab {
+        font-weight: 500;
+        color: hsl(var(--bc) / 0.6);
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .tabs-custom .tab:hover {
+        color: hsl(var(--bc));
+        background-color: hsl(var(--b2));
+      }
+      .tabs-custom .tab:checked {
+        color: hsl(var(--p));
+        background-color: hsl(var(--p) / 0.1);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body class="bg-base-200">
+    <div class="p-4">
+      <!-- 头部区域 -->
+      <div class="flex items-center gap-3 mb-4">
+        <a href="index.html" class="btn btn-ghost btn-sm btn-circle" title="返回首页">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </a>
+        <div class="flex-1">
+          <h1 class="text-lg font-bold">Another 网站</h1>
+          <p class="text-xs text-base-content/60">another.com</p>
+        </div>
+      </div>
+
+      <!-- 功能内容区域 - Tab 标签页 -->
+      <div class="card bg-base-100 shadow-sm mb-3">
+        <div class="card-body">
+          <div class="tabs tabs-custom">
+            <input type="radio" name="action_tabs" class="tab" aria-label="Token" checked />
+            <input type="radio" name="action_tabs" class="tab" aria-label="用户配置" />
+            <input type="radio" name="action_tabs" class="tab" aria-label="浏览历史" />
+          </div>
+          <div class="tab-panels">
+            <div class="tab-panel" data-tab="Token">
+              <h3 class="text-sm font-medium mb-1">获取 Access Token</h3>
+              <p class="text-xs text-base-content/60 mb-3">获取 another.com 的 API 访问令牌</p>
+              <button id="get-token-btn" class="btn btn-primary btn-sm w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+                获取 Token
+              </button>
+            </div>
+            <div class="tab-panel hidden" data-tab="用户配置">
+              <h3 class="text-sm font-medium mb-1">获取用户配置</h3>
+              <p class="text-xs text-base-content/60 mb-3">读取用户的偏好设置和配置数据</p>
+              <button id="get-config-btn" class="btn btn-secondary btn-sm w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                获取用户配置
+              </button>
+            </div>
+            <div class="tab-panel hidden" data-tab="浏览历史">
+              <h3 class="text-sm font-medium mb-1">获取浏览历史</h3>
+              <p class="text-xs text-base-content/60 mb-3">获取当前会话的浏览记录</p>
+              <button id="get-history-btn" class="btn btn-accent btn-sm w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                获取浏览历史
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- 数据展示区域（可折叠） -->
+        <div id="data-display" class="collapse collapse-arrow bg-base-100 shadow-sm hidden">
+          <input type="checkbox" />
+          <div class="collapse-title text-sm font-medium">
+            已获取数据预览
+          </div>
+          <div class="collapse-content">
+            <pre id="data-content" class="bg-base-300 p-3 rounded text-xs overflow-x-auto"></pre>
+          </div>
+        </div>
+
+        <!-- 发送到后端按钮 -->
+        <button id="send-btn" class="btn btn-success w-full" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+          发送到后端
+        </button>
+      </div>
+    </div>
+
+    <!-- 提示信息 -->
+    <div id="toast" class="toast toast-center toast-middle hidden">
+      <div id="toast-content" class="alert">
+        <span id="toast-message"></span>
+      </div>
+    </div>
+
+    <script>
+      // 存储获取的数据
+      let collectedData = null;
+
+      // DOM 元素
+      const getTokenBtn = document.getElementById('get-token-btn');
+      const getConfigBtn = document.getElementById('get-config-btn');
+      const getHistoryBtn = document.getElementById('get-history-btn');
+      const sendBtn = document.getElementById('send-btn');
+      const dataDisplay = document.getElementById('data-display');
+      const dataContent = document.getElementById('data-content');
+      const toast = document.getElementById('toast');
+      const toastContent = document.getElementById('toast-content');
+      const toastMessage = document.getElementById('toast-message');
+
+      // 显示提示
+      function showToast(message, type = 'info') {
+        toastMessage.textContent = message;
+        toastContent.className = `alert alert-${type}`;
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3000);
+      }
+
+      // 显示数据
+      function showData(data) {
+        collectedData = {
+          site: 'another.com',
+          timestamp: new Date().toISOString(),
+          data: data
+        };
+        dataContent.textContent = JSON.stringify(collectedData, null, 2);
+        dataDisplay.classList.remove('hidden');
+        sendBtn.disabled = false;
+      }
+
+      // 获取 Token（模拟）
+      function getToken() {
+        getTokenBtn.disabled = true;
+        getTokenBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
+
+        setTimeout(() => {
+          getTokenBtn.disabled = false;
+          getTokenBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            获取 Token
+          `;
+
+          showData({
+            type: 'token',
+            accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' + Math.random().toString(36).substr(2, 20),
+            refreshToken: 'rt_' + Math.random().toString(36).substr(2, 16),
+            expiresIn: 3600,
+            scope: 'read write'
+          });
+          showToast('Token 获取成功', 'success');
+        }, 1000);
+      }
+
+      // 获取用户配置（模拟）
+      function getUserConfig() {
+        getConfigBtn.disabled = true;
+        getConfigBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
+
+        setTimeout(() => {
+          getConfigBtn.disabled = false;
+          getConfigBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            获取用户配置
+          `;
+
+          showData({
+            type: 'config',
+            theme: 'dark',
+            language: 'zh-CN',
+            notifications: true,
+            autoSave: false,
+            customSettings: {
+              fontSize: 14,
+              sidebarCollapsed: false
+            }
+          });
+          showToast('用户配置获取成功', 'success');
+        }, 1000);
+      }
+
+      // 获取浏览历史（模拟）
+      function getHistory() {
+        getHistoryBtn.disabled = true;
+        getHistoryBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
+
+        setTimeout(() => {
+          getHistoryBtn.disabled = false;
+          getHistoryBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            获取浏览历史
+          `;
+
+          showData({
+            type: 'history',
+            sessionId: 'sess_' + Math.random().toString(36).substr(2, 8),
+            pages: [
+              { url: '/dashboard', title: '仪表盘', time: '2分钟前' },
+              { url: '/profile', title: '个人资料', time: '5分钟前' },
+              { url: '/settings', title: '设置', time: '10分钟前' }
+            ]
+          });
+          showToast('浏览历史获取成功', 'success');
+        }, 1000);
+      }
+
+      // 发送到后端
+      async function sendToBackend() {
+        if (!collectedData) {
+          showToast('请先获取数据', 'warning');
+          return;
+        }
+
+        // 获取设置
+        const backendUrl = localStorage.getItem('backendUrl');
+        const apiKey = localStorage.getItem('apiKey');
+
+        if (!backendUrl || !apiKey) {
+          showToast('请先配置后端地址和密钥', 'warning');
+          setTimeout(() => {
+            window.location.href = 'settings.html';
+          }, 1500);
+          return;
+        }
+
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = `<span class="loading loading-spinner loading-sm"></span> 发送中...`;
+
+        // 模拟发送请求
+        setTimeout(() => {
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            发送到后端
+          `;
+
+          // 模拟发送结果
+          const isSuccess = Math.random() > 0.2; // 80% 成功率
+          if (isSuccess) {
+            showToast('数据发送成功', 'success');
+            collectedData = null;
+            dataDisplay.classList.add('hidden');
+            sendBtn.disabled = true;
+          } else {
+            showToast('发送失败，请检查网络或配置', 'error');
+          }
+        }, 2000);
+      }
+
+      // 事件监听
+      getTokenBtn.addEventListener('click', getToken);
+      getConfigBtn.addEventListener('click', getUserConfig);
+      getHistoryBtn.addEventListener('click', getHistory);
+      sendBtn.addEventListener('click', sendToBackend);
+    </script>
+  </body>
+</html>

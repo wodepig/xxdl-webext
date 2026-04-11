@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <style>
+      body {
+        width: 470px;
+        min-height: 400px;
+      }
+    </style>
+  </head>
+  <body class="bg-base-200">
+    <div class="p-4">
+      <!-- 头部区域 -->
+      <div class="flex items-center gap-3 mb-4">
+        <a href="index.html" class="btn btn-ghost btn-sm btn-circle" title="返回首页">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </a>
+        <div class="flex-1">
+          <h1 id="site-name" class="text-lg font-bold">网站名称</h1>
+          <p id="site-domain" class="text-xs text-base-content/60">domain.com</p>
+        </div>
+      </div>
+
+      <!-- 功能内容区域 - 由各网站具体操作页面填充 -->
+      <div id="action-content">
+        <!-- 默认提示：这是一个模板框架 -->
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body items-center text-center">
+            <div class="w-16 h-16 bg-base-300 rounded-full flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              </svg>
+            </div>
+            <h3 class="card-title text-base">功能操作页模板</h3>
+            <p class="text-sm text-base-content/70 mt-2">
+              这是一个通用的操作页面框架。<br>
+              各网站应创建自己的操作页面，继承此框架并填充自定义功能。
+            </p>
+            <div class="divider text-xs text-base-content/50">示例页面</div>
+            <div class="flex gap-2">
+              <a href="action-example.html" class="btn btn-primary btn-sm">example.com 示例</a>
+              <a href="action-another.html" class="btn btn-secondary btn-sm">another.com 示例</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 设置网站信息（由各子页面调用）
+      function setSiteInfo(name, domain) {
+        document.getElementById('site-name').textContent = name;
+        document.getElementById('site-domain').textContent = domain;
+      }
+
+      // 获取设置信息（供子页面使用）
+      function getSettings() {
+        // 实际扩展中从 chrome.storage 读取
+        // 这里使用 localStorage 模拟
+        return {
+          backendUrl: localStorage.getItem('backendUrl') || '',
+          apiKey: localStorage.getItem('apiKey') || ''
+        };
+      }
+
+      // 检查设置是否完整
+      function checkSettings() {
+        const settings = getSettings();
+        if (!settings.backendUrl || !settings.apiKey) {
+          return {
+            valid: false,
+            message: '请先配置后端地址和请求密钥'
+          };
+        }
+        return { valid: true };
+      }
+
+      // 导出供子页面使用
+      window.ActionFramework = {
+        setSiteInfo,
+        getSettings,
+        checkSettings
+      };
+    </script>
+  </body>
+</html>

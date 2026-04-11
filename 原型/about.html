@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <style>
+      body {
+        width: 470px;
+        min-height: 400px;
+      }
+      /* tabs 样式优化 - 与卡片风格统一 */
+      .tabs-custom {
+        display: flex;
+        gap: 8px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid hsl(var(--b3));
+      }
+      .tabs-custom .tab {
+        font-weight: 500;
+        color: hsl(var(--bc) / 0.6);
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .tabs-custom .tab:hover {
+        color: hsl(var(--bc));
+        background-color: hsl(var(--b2));
+      }
+      .tabs-custom .tab:checked {
+        color: hsl(var(--p));
+        background-color: hsl(var(--p) / 0.1);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body class="bg-base-200">
+    <div class="p-4">
+      <!-- 头部区域 -->
+      <div class="flex items-center gap-3 mb-4">
+        <a href="index.html" class="btn btn-ghost btn-sm btn-circle" title="返回首页">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </a>
+        <h1 class="text-lg font-bold">关于</h1>
+      </div>
+
+      <!-- 扩展信息卡片 -->
+      <div class="card bg-base-100 shadow-sm mb-4">
+        <div class="card-body items-center text-center">
+          <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h2 class="card-title text-xl">🍪 数据获取扩展</h2>
+          <div class="badge badge-primary mt-1">版本 1.0.0</div>
+        </div>
+      </div>
+
+      <!-- Tab 标签页：功能说明和使用帮助 -->
+      <div class="card bg-base-100 shadow-sm mb-4">
+        <div class="card-body">
+          <div class="tabs tabs-custom">
+            <input type="radio" name="about_tabs" class="tab" aria-label="功能说明" checked />
+            <input type="radio" name="about_tabs" class="tab" aria-label="使用帮助" />
+          </div>
+          <div class="tab-panels">
+            <div class="tab-panel" data-tab="功能说明">
+              <ul class="text-sm text-base-content/80 space-y-2">
+                <li class="flex items-start gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>快速获取支持网站的 Cookie 数据</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>读取 LocalStorage 存储信息</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>读取 SessionStorage 会话数据</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>一键发送到后端服务器</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>支持多个网站的定制化操作</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tab-panel hidden" data-tab="使用帮助">
+              <div class="text-sm text-base-content/80 space-y-3">
+                <div class="bg-base-200 p-3 rounded-lg">
+                  <p class="font-medium mb-1">第一步：配置后端</p>
+                  <p class="text-xs text-base-content/60">首次使用请先进入设置页面，配置后端服务器地址和请求密钥。</p>
+                </div>
+                <div class="bg-base-200 p-3 rounded-lg">
+                  <p class="font-medium mb-1">第二步：访问支持网站</p>
+                  <p class="text-xs text-base-content/60">打开支持的网站（如 example.com、another.com）。</p>
+                </div>
+                <div class="bg-base-200 p-3 rounded-lg">
+                  <p class="font-medium mb-1">第三步：获取并发送数据</p>
+                  <p class="text-xs text-base-content/60">点击扩展图标，选择需要的操作获取数据，然后发送到后端。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 技术支持 -->
+      <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title text-base flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            技术支持
+          </h3>
+          <div class="text-sm text-base-content/70 mt-2 space-y-1">
+            <p>如有问题或建议，请联系我们：</p>
+            <div class="flex items-center gap-2 mt-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span class="text-xs">support@example.com</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              <span class="text-xs">github.com/example/extension</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 版权信息 -->
+      <div class="text-center text-xs text-base-content/50 mt-6 pb-4">
+        <p>© 2024 数据获取扩展. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -4,30 +4,19 @@
     <div class="bg-red-200 p-5">
       hello
     </div>
-    <button class="btn btn-primary">Primary</button>
-     <img :src="someCoolImage" alt="一个非常酷的图像" />
-    <h2 class="text-center">
-      Welcome to your 888
-      <a href="https://www.plasmo.com" target="_blank">Plasmo</a> Extension!
-    </h2>
+  
+    <button class="btn btn-primary" @click="mytest">测试</button>
 
     <div class="container">
-      <button @click="decrement">-</button>
-      <p>
-        <b>{{ state.count }}</b>
-      </p>
-      <button @click="increment">+</button>
+    
     </div>
   </div>
-  <p v-if="state.action" class="action text-center">
-    {{ state.action }}
-  </p>
-  <a href="https://docs.plasmo.com" target="_blank"> View Docs </a>
+
 </template>
 
 <style>
 .container {
-  min-width: 470px;
+  min-width: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,14 +35,14 @@
 import "./style.css"
 import { reactive } from "vue"
 import type { App } from "vue"
-import someCoolImage from "data-base64:/assets/xxdl-wx-qr.jpg"
+
 
 const extensionName = chrome.i18n.getMessage("extensionName")
 const state = reactive({ count: 0, action: null })
 
-function increment() {
-  state.count++
-  state.action = "increment"
+async function mytest() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  console.log(tab)
 }
 
 function decrement() {
