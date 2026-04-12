@@ -62,62 +62,57 @@
       </div>
 
       <!-- Tab 标签页：功能说明和使用帮助 -->
-      <div class="card bg-base-100 shadow-sm mb-4">
-        <div class="card-body">
-          <div class="tabs tabs-custom">
-            <input type="radio" name="about_tabs" class="tab" aria-label="功能说明" checked />
-            <input type="radio" name="about_tabs" class="tab" aria-label="使用帮助" />
-          </div>
-          <div class="tab-panels">
-            <div class="tab-panel" data-tab="功能说明">
-              <ul class="text-sm text-base-content/80 space-y-2">
-                <li class="flex items-start gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>快速获取支持网站的 Cookie 数据</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>读取 LocalStorage 存储信息</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>读取 SessionStorage 会话数据</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>一键发送到后端服务器</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>支持多个网站的定制化操作</span>
-                </li>
-              </ul>
+      <div class="tabs tabs-box mb-4">
+        <input type="radio" name="about_tabs" class="tab" aria-label="✨ 功能说明" checked="checked" />
+        <div class="tab-content bg-base-100 border-base-300 p-4">
+          <ul class="text-sm text-base-content/80 space-y-2">
+            <li class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>快速获取支持网站的 Cookie 数据</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>读取 LocalStorage 存储信息</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>读取 SessionStorage 会话数据</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>一键发送到后端服务器</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>支持多个网站的定制化操作</span>
+            </li>
+          </ul>
+        </div>
+
+        <input type="radio" name="about_tabs" class="tab" aria-label="❓ 使用帮助" />
+        <div class="tab-content bg-base-100 border-base-300 p-4">
+          <div class="text-sm text-base-content/80 space-y-3">
+            <div class="bg-base-200 p-3 rounded-lg">
+              <p class="font-medium mb-1">第一步：配置后端</p>
+              <p class="text-xs text-base-content/60">首次使用请先进入设置页面，配置后端服务器地址和请求密钥。</p>
             </div>
-            <div class="tab-panel hidden" data-tab="使用帮助">
-              <div class="text-sm text-base-content/80 space-y-3">
-                <div class="bg-base-200 p-3 rounded-lg">
-                  <p class="font-medium mb-1">第一步：配置后端</p>
-                  <p class="text-xs text-base-content/60">首次使用请先进入设置页面，配置后端服务器地址和请求密钥。</p>
-                </div>
-                <div class="bg-base-200 p-3 rounded-lg">
-                  <p class="font-medium mb-1">第二步：访问支持网站</p>
-                  <p class="text-xs text-base-content/60">打开支持的网站（如 example.com、another.com）。</p>
-                </div>
-                <div class="bg-base-200 p-3 rounded-lg">
-                  <p class="font-medium mb-1">第三步：获取并发送数据</p>
-                  <p class="text-xs text-base-content/60">点击扩展图标，选择需要的操作获取数据，然后发送到后端。</p>
-                </div>
-              </div>
+            <div class="bg-base-200 p-3 rounded-lg">
+              <p class="font-medium mb-1">第二步：访问支持网站</p>
+              <p class="text-xs text-base-content/60">打开支持的网站（如 example.com、another.com）。</p>
+            </div>
+            <div class="bg-base-200 p-3 rounded-lg">
+              <p class="font-medium mb-1">第三步：获取并发送数据</p>
+              <p class="text-xs text-base-content/60">点击扩展图标，选择需要的操作获取数据，然后发送到后端。</p>
             </div>
           </div>
         </div>

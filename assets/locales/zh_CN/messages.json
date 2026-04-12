@@ -1,14 +1,322 @@
 {
   "extensionName": {
-    "message": "筱筱动力",
-    "description": "扩展名称。"
+    "message": "数据获取工具",
+    "description": "扩展名称"
   },
   "extensionDescription": {
-    "message": "示例使用 locales + i18n！",
-    "description": "扩展描述。"
+    "message": "帮助您快速获取支持网站的 Cookie 和 Storage 数据",
+    "description": "扩展描述"
   },
-  "popup": {
-    "message": "逻辑是智慧的开始，而不是结束。",
-    "description": "弹出消息。"
+  "version": {
+    "message": "版本",
+    "description": "版本标签"
+  },
+  "copyright": {
+    "message": "© 2024 数据获取扩展. All rights reserved.",
+    "description": "版权信息"
+  },
+  "statusActive": {
+    "message": "当前",
+    "description": "当前状态"
+  },
+  "statusSupported": {
+    "message": "已支持",
+    "description": "已支持状态"
+  },
+  "statusPending": {
+    "message": "即将推出",
+    "description": "即将推出状态"
+  },
+  "moreSites": {
+    "message": "更多网站",
+    "description": "更多网站"
+  },
+  "comingSoon": {
+    "message": "开发中...",
+    "description": "开发中"
+  },
+  "welcomeTitle": {
+    "message": "欢迎使用",
+    "description": "欢迎标题"
+  },
+  "welcomeDesc": {
+    "message": "本扩展可以帮助您快速获取支持网站的 Cookie 和 Storage 数据",
+    "description": "欢迎描述"
+  },
+  "tabUsage": {
+    "message": "使用方式",
+    "description": "使用方式标签"
+  },
+  "tabSites": {
+    "message": "支持网站",
+    "description": "支持网站标签"
+  },
+  "tabTips": {
+    "message": "使用建议",
+    "description": "使用建议标签"
+  },
+  "step1Title": {
+    "message": "打开支持的网站",
+    "description": "步骤1标题"
+  },
+  "step1Desc": {
+    "message": "访问已配置的支持列表中的任意网站",
+    "description": "步骤1描述"
+  },
+  "step2Title": {
+    "message": "点击扩展图标",
+    "description": "步骤2标题"
+  },
+  "step2Desc": {
+    "message": "在浏览器工具栏中点击本扩展图标",
+    "description": "步骤2描述"
+  },
+  "step3Title": {
+    "message": "选择需要的操作",
+    "description": "步骤3标题"
+  },
+  "step3Desc": {
+    "message": "在操作页面选择要获取的数据类型",
+    "description": "步骤3描述"
+  },
+  "step4Title": {
+    "message": "发送到后端",
+    "description": "步骤4标题"
+  },
+  "step4Desc": {
+    "message": "获取数据后可一键发送到您的服务器",
+    "description": "步骤4描述"
+  },
+  "tipQuickStart": {
+    "message": "快速开始",
+    "description": "快速开始提示标题"
+  },
+  "tipQuickStartDesc": {
+    "message": "打开对应网站后，点击扩展图标即可使用",
+    "description": "快速开始提示描述"
+  },
+  "tipNotice": {
+    "message": "注意事项",
+    "description": "注意事项提示标题"
+  },
+  "tipNoticeDesc": {
+    "message": "请确保已在设置页面配置后端地址和API密钥",
+    "description": "注意事项提示描述"
+  },
+  "tipSecurity": {
+    "message": "数据安全",
+    "description": "数据安全提示标题"
+  },
+  "tipSecurityDesc": {
+    "message": "所有数据仅发送到您配置的后端服务器",
+    "description": "数据安全提示描述"
+  },
+  "statusSupportedSite": {
+    "message": "当前页面支持操作",
+    "description": "当前页面支持状态"
+  },
+  "statusUnsupportedSite": {
+    "message": "当前页面没有可操作的功能",
+    "description": "当前页面不支持状态"
+  },
+  "siteDetected": {
+    "message": "检测到您正在访问 $1，可以使用数据获取功能",
+    "description": "检测到网站"
+  },
+  "siteNotSupported": {
+    "message": "当前网站不在支持列表中，请访问支持的网站后重试",
+    "description": "网站不支持"
+  },
+  "enterAction": {
+    "message": "进入操作页面",
+    "description": "进入操作页面按钮"
+  },
+  "aboutTitle": {
+    "message": "关于",
+    "description": "关于页面标题"
+  },
+  "backToHome": {
+    "message": "返回首页",
+    "description": "返回首页按钮"
+  },
+  "tabFeatures": {
+    "message": "功能说明",
+    "description": "功能说明标签"
+  },
+  "tabHelp": {
+    "message": "使用帮助",
+    "description": "使用帮助标签"
+  },
+  "featureCookie": {
+    "message": "快速获取支持网站的 Cookie 数据",
+    "description": "功能-Cookie"
+  },
+  "featureLocalStorage": {
+    "message": "读取 LocalStorage 存储信息",
+    "description": "功能-LocalStorage"
+  },
+  "featureSessionStorage": {
+    "message": "读取 SessionStorage 会话数据",
+    "description": "功能-SessionStorage"
+  },
+  "featureSendToBackend": {
+    "message": "一键发送到后端服务器",
+    "description": "功能-发送到后端"
+  },
+  "featureMultiSites": {
+    "message": "支持多个网站的定制化操作",
+    "description": "功能-多网站支持"
+  },
+  "helpStep1Title": {
+    "message": "第一步：配置后端",
+    "description": "帮助步骤1标题"
+  },
+  "helpStep1Desc": {
+    "message": "首次使用请先进入设置页面，配置后端服务器地址和请求密钥",
+    "description": "帮助步骤1描述"
+  },
+  "helpStep2Title": {
+    "message": "第二步：访问支持网站",
+    "description": "帮助步骤2标题"
+  },
+  "helpStep2Desc": {
+    "message": "打开支持的网站（如 example.com、another.com）",
+    "description": "帮助步骤2描述"
+  },
+  "helpStep3Title": {
+    "message": "第三步：获取并发送数据",
+    "description": "帮助步骤3标题"
+  },
+  "helpStep3Desc": {
+    "message": "点击扩展图标，选择需要的操作获取数据，然后发送到后端",
+    "description": "帮助步骤3描述"
+  },
+  "techSupport": {
+    "message": "技术支持",
+    "description": "技术支持标题"
+  },
+  "contactUs": {
+    "message": "如有问题或建议，请联系我们：",
+    "description": "联系我们"
+  },
+  "settingsTitle": {
+    "message": "设置",
+    "description": "设置页面标题"
+  },
+  "backendConfigTitle": {
+    "message": "后端地址配置",
+    "description": "后端配置标题"
+  },
+  "backendConfigDesc": {
+    "message": "配置数据发送的目标服务器地址",
+    "description": "后端配置描述"
+  },
+  "backendUrlLabel": {
+    "message": "后端 URL",
+    "description": "后端URL标签"
+  },
+  "backendUrlPlaceholder": {
+    "message": "https://api.example.com/collect",
+    "description": "后端URL占位符"
+  },
+  "backendUrlHint": {
+    "message": "支持 http:// 或 https:// 协议",
+    "description": "后端URL提示"
+  },
+  "testConnection": {
+    "message": "测试连接",
+    "description": "测试连接按钮"
+  },
+  "testing": {
+    "message": "测试中...",
+    "description": "测试中状态"
+  },
+  "connectionSuccess": {
+    "message": "✓ 连接成功",
+    "description": "连接成功"
+  },
+  "connectionFailed": {
+    "message": "✗ 连接失败",
+    "description": "连接失败"
+  },
+  "apiKeyConfigTitle": {
+    "message": "请求密钥配置",
+    "description": "API密钥配置标题"
+  },
+  "apiKeyConfigDesc": {
+    "message": "配置访问后端 API 的认证密钥",
+    "description": "API密钥配置描述"
+  },
+  "apiKeyLabel": {
+    "message": "API Key",
+    "description": "API密钥标签"
+  },
+  "apiKeyPlaceholder": {
+    "message": "请输入请求密钥",
+    "description": "API密钥占位符"
+  },
+  "apiKeyHint": {
+    "message": "密钥将用于请求头 Authorization 字段",
+    "description": "API密钥提示"
+  },
+  "toggleKeyVisibility": {
+    "message": "显示/隐藏密钥",
+    "description": "切换密钥可见性"
+  },
+  "saveSettings": {
+    "message": "保存设置",
+    "description": "保存设置按钮"
+  },
+  "enterBackendUrl": {
+    "message": "请输入后端地址",
+    "description": "请输入后端地址提示"
+  },
+  "enterApiKey": {
+    "message": "请输入请求密钥",
+    "description": "请输入API密钥提示"
+  },
+  "invalidUrl": {
+    "message": "URL 格式不正确",
+    "description": "URL格式错误"
+  },
+  "settingsSaved": {
+    "message": "设置已保存",
+    "description": "设置已保存提示"
+  },
+  "actionTemplateTitle": {
+    "message": "功能操作页模板",
+    "description": "操作页模板标题"
+  },
+  "actionTemplateDesc": {
+    "message": "这是一个通用的操作页面框架。<br>各网站应创建自己的操作页面，继承此框架并填充自定义功能。",
+    "description": "操作页模板描述"
+  },
+  "examplePages": {
+    "message": "示例页面",
+    "description": "示例页面"
+  },
+  "example": {
+    "message": "示例",
+    "description": "示例"
+  },
+  "settingsIncomplete": {
+    "message": "请先配置后端地址和请求密钥",
+    "description": "设置不完整提示"
+  },
+  "showApiPathConfig": {
+    "message": "配置 API 路径",
+    "description": "显示 API 路径配置"
+  },
+  "hideApiPathConfig": {
+    "message": "隐藏 API 路径配置",
+    "description": "隐藏 API 路径配置"
+  },
+  "resetToDefault": {
+    "message": "重置",
+    "description": "重置按钮"
+  },
+  "saveApiPath": {
+    "message": "保存",
+    "description": "保存按钮"
   }
 }

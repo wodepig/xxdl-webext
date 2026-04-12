@@ -31,7 +31,10 @@
     "typescript": "6.0.2"
   },
   "manifest": {
-    "default_locale": "en",
+    "default_locale": "zh_CN",
+        "permissions": [
+        "action"
+    ],
     "host_permissions": [
       "https://*/*"
     ]

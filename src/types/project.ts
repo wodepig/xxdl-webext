@@ -9,4 +9,6 @@ export interface ProjectConf {
   matchTitle: string[]
   // 后端key
   backendKey: string
+  // 项目文件名, 用于在popup中显示, 路径是tabs/fileName.vue, eg: example/xindao 不需要包含.vue
+  fileName: string
 }

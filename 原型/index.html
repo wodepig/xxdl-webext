@@ -1,117 +1,238 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <style>
-      body {
-        width: 470px;
-        min-height: 400px;
-      }
-      /* tabs 样式 - 使用 DaisyUI 原生样式 */
-      .tabs .tab {
-        font-weight: 500;
-      }
-      .tabs .tab:checked {
-        font-weight: 600;
-      }
-    </style>
-  </head>
-  <body class="bg-base-200">
-    <div class="p-4">
-      <!-- 头部区域 -->
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-xl font-bold">🍪 数据获取扩展</h1>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <style>
+    body {
+      width: 470px;
+      min-height: 400px;
+    }
+
+    /* tabs 样式 - 使用 DaisyUI 原生样式 */
+    .tabs .tab {
+      font-weight: 500;
+    }
+
+    .tabs .tab:checked {
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body class="bg-base-200">
+  <div class="p-4">
+    <!-- 头部区域 -->
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-xl font-bold">🍪 数据获取扩展</h1>
+      <!-- 头部功能区组件 - 包含夜晚模式切换、设置和关于按钮 -->
         <div class="flex gap-2">
+          <!-- 夜晚模式切换按钮 -->
+          <button id="theme-toggle" class="btn btn-ghost btn-sm" title="切换夜晚模式">
+            <!-- 太阳图标（白天模式显示） -->
+            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <!-- 月亮图标（夜晚模式显示） -->
+            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+
           <a href="settings.html" class="btn btn-ghost btn-sm" title="设置">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </a>
           <a href="about.html" class="btn btn-ghost btn-sm" title="关于">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </a>
         </div>
-      </div>
+    </div>
 
-      <!-- 欢迎信息区域 -->
-      <div class="card bg-base-100 shadow-sm mb-4">
-        <div class="card-body">
-          <h2 class="card-title text-lg">欢迎使用 👋</h2>
-          <p class="text-sm text-base-content/70">本扩展可以帮助您快速获取支持网站的 Cookie 和 Storage 数据。</p>
-        </div>
+    <!-- 欢迎信息区域 -->
+    <div class="card bg-base-100 shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="card-title text-lg">欢迎使用 👋</h2>
+        <p class="text-sm text-base-content/70">本扩展可以帮助您快速获取支持网站的 Cookie 和 Storage 数据。</p>
       </div>
+    </div>
 
-      <!-- Tab 标签页：使用方式和支持的网站 -->
-      <div class="card bg-base-100 shadow-sm mb-4">
-        <div class="card-body">
-          <div class="tabs tabs-lifted">
-            <input type="radio" name="home_tabs" class="tab" aria-label="使用方式" checked />
-            <div class="tab-content">
-              <ol class="list-decimal list-inside text-sm space-y-1 text-base-content/80">
-                <li>打开支持的网站</li>
-                <li>点击扩展图标</li>
-                <li>选择需要的操作</li>
-                <li>获取数据后可发送到后端</li>
-              </ol>
+    <!-- Tab 标签页 -->
+    <div class="tabs tabs-box mb-4">
+      <input type="radio" name="my_tabs_6" class="tab" aria-label="📖 使用方式" checked="checked" />
+      <div class="tab-content bg-base-100 border-base-300 p-4">
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-base-200/50">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-primary font-bold text-sm">1</span>
             </div>
+            <div>
+              <h3 class="text-sm font-semibold">打开支持的网站</h3>
+              <p class="text-xs text-base-content/60">访问已配置的支持列表中的任意网站</p>
+            </div>
+          </div>
 
-            <input type="radio" name="home_tabs" class="tab" aria-label="支持网站" />
-            <div class="tab-content">
-              <div class="flex flex-wrap gap-2">
-                <span class="badge badge-primary">example.com</span>
-                <span class="badge badge-primary">another.com</span>
-                <span class="badge badge-ghost">更多网站开发中...</span>
-              </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-base-200/50">
+            <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-secondary font-bold text-sm">2</span>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold">点击扩展图标</h3>
+              <p class="text-xs text-base-content/60">在浏览器工具栏中点击本扩展图标</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-base-200/50">
+            <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-accent font-bold text-sm">3</span>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold">选择需要的操作</h3>
+              <p class="text-xs text-base-content/60">在操作页面选择要获取的数据类型</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-base-200/50">
+            <div class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-success font-bold text-sm">4</span>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold">发送到后端</h3>
+              <p class="text-xs text-base-content/60">获取数据后可一键发送到您的服务器</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 当前页面状态提示 -->
-      <div id="status-container" class="card shadow-sm">
-        <!-- 状态内容将由 JavaScript 动态生成 -->
+      <input type="radio" name="my_tabs_6" class="tab" aria-label="🌐 支持网站" />
+      <div class="tab-content bg-base-100 border-base-300 p-4">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <span class="text-lg">🌐</span>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold">example.com</h3>
+                <p class="text-xs text-base-content/60">Example 网站</p>
+              </div>
+            </div>
+            <span class="badge badge-primary badge-sm">已支持</span>
+          </div>
+
+          <div class="flex items-center justify-between p-3 rounded-lg bg-secondary/5 border border-secondary/20">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+                <span class="text-lg">🚀</span>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold">another.com</h3>
+                <p class="text-xs text-base-content/60">Another 网站</p>
+              </div>
+            </div>
+            <span class="badge badge-secondary badge-sm">已支持</span>
+          </div>
+
+          <div class="flex items-center justify-between p-3 rounded-lg bg-base-200/50 border border-dashed border-base-content/20">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-base-300 flex items-center justify-center">
+                <span class="text-lg opacity-50">🔒</span>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-base-content/50">更多网站</h3>
+                <p class="text-xs text-base-content/40">开发中...</p>
+              </div>
+            </div>
+            <span class="badge badge-ghost badge-sm">即将推出</span>
+          </div>
+        </div>
+      </div>
+
+      <input type="radio" name="my_tabs_6" class="tab" aria-label="💡 使用建议" />
+      <div class="tab-content bg-base-100 border-base-300 p-4">
+        <div class="space-y-3">
+          <div class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+              <h3 class="font-bold">快速开始</h3>
+              <div class="text-xs">打开对应网站后，点击扩展图标即可使用</div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <h3 class="font-bold">注意事项</h3>
+              <div class="text-xs">请确保已在设置页面配置后端地址和API密钥</div>
+            </div>
+          </div>
+
+          <div class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <h3 class="font-bold">数据安全</h3>
+              <div class="text-xs">所有数据仅发送到您配置的后端服务器</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <script>
-      // 模拟配置数据 - 支持的网站列表
-      const supportedSites = [
-        { domain: 'example.com', name: 'Example 网站', actionPage: 'action-example.html' },
-        { domain: 'another.com', name: 'Another 网站', actionPage: 'action-another.html' }
-      ];
+    <!-- 当前页面状态提示 -->
+    <div id="status-container" class="card shadow-sm">
+      <!-- 状态内容将由 JavaScript 动态生成 -->
+    </div>
+  </div>
 
-      // 获取当前页面状态（模拟）
-      function checkCurrentPage() {
-        // 实际扩展中，这里会通过 chrome.tabs API 获取当前页面 URL
-        // 这里模拟几种情况用于原型展示
-        const urlParams = new URLSearchParams(window.location.search);
-        const mockUrl = urlParams.get('mock') || 'unknown';
+  <script>
+    // 模拟配置数据 - 支持的网站列表
+    const supportedSites = [
+      { domain: 'example.com', name: 'Example 网站', actionPage: 'action-example.html' },
+      { domain: 'another.com', name: 'Another 网站', actionPage: 'action-another.html' }
+    ];
 
-        let currentSite = null;
+    // 获取当前页面状态（模拟）
+    function checkCurrentPage() {
+      // 实际扩展中，这里会通过 chrome.tabs API 获取当前页面 URL
+      // 这里模拟几种情况用于原型展示
+      const urlParams = new URLSearchParams(window.location.search);
+      const mockUrl = urlParams.get('mock') || 'unknown';
 
-        if (mockUrl.includes('example.com')) {
-          currentSite = supportedSites[0];
-        } else if (mockUrl.includes('another.com')) {
-          currentSite = supportedSites[1];
-        }
+      let currentSite = null;
 
-        renderStatus(currentSite);
+      if (mockUrl.includes('example.com')) {
+        currentSite = supportedSites[0];
+      } else if (mockUrl.includes('another.com')) {
+        currentSite = supportedSites[1];
       }
 
-      // 渲染状态提示
-      function renderStatus(currentSite) {
-        const container = document.getElementById('status-container');
+      renderStatus(currentSite);
+    }
 
-        if (currentSite) {
-          // 当前页面支持
-          container.className = 'card bg-success/10 border-success/30 shadow-sm';
-          container.innerHTML = `
+    // 渲染状态提示
+    function renderStatus(currentSite) {
+      const container = document.getElementById('status-container');
+
+      if (currentSite) {
+        // 当前页面支持
+        container.className = 'card bg-success/10 border-success/30 shadow-sm';
+        container.innerHTML = `
             <div class="card-body">
               <div class="flex items-center gap-2 mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,10 +249,10 @@
               </a>
             </div>
           `;
-        } else {
-          // 当前页面不支持
-          container.className = 'card bg-warning/10 border-warning/30 shadow-sm';
-          container.innerHTML = `
+      } else {
+        // 当前页面不支持
+        container.className = 'card bg-warning/10 border-warning/30 shadow-sm';
+        container.innerHTML = `
             <div class="card-body">
               <div class="flex items-center gap-2 mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -145,11 +266,53 @@
               </div>
             </div>
           `;
-        }
+      }
+    }
+
+    // 页面加载时检查状态
+    checkCurrentPage();
+
+    // 主题切换功能
+    (function() {
+      const themeToggle = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('sun-icon');
+      const moonIcon = document.getElementById('moon-icon');
+      const html = document.documentElement;
+
+      // 从 localStorage 读取主题设置
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      // 初始化主题
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        html.setAttribute('data-theme', 'dark');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+      } else {
+        html.setAttribute('data-theme', 'light');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
       }
 
-      // 页面加载时检查状态
-      checkCurrentPage();
-    </script>
-  </body>
+      // 切换主题
+      themeToggle.addEventListener('click', function() {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        // 切换图标
+        if (newTheme === 'dark') {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        } else {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        }
+      });
+    })();
+  </script>
+</body>
+
 </html>

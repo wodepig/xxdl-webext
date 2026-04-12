@@ -1,14 +1,126 @@
 {
   "extensionName": {
-    "message": "with-locales-i18n-en",
-    "description": "扩展名称。"
+    "message": "Data Fetch Extension",
+    "description": "Extension name"
   },
   "extensionDescription": {
-    "message": "english desc！",
-    "description": "扩展描述。"
+    "message": "Help you quickly fetch Cookie and Storage data from supported websites",
+    "description": "Extension description"
   },
-  "popup": {
-    "message": "popup message！",
-    "description": "弹出消息。"
+  "welcomeTitle": {
+    "message": "Welcome",
+    "description": "Welcome title"
+  },
+  "welcomeDesc": {
+    "message": "This extension helps you quickly fetch Cookie and Storage data from supported websites",
+    "description": "Welcome description"
+  },
+  "tabUsage": {
+    "message": "How to Use",
+    "description": "Usage tab"
+  },
+  "tabSites": {
+    "message": "Supported Sites",
+    "description": "Sites tab"
+  },
+  "tabTips": {
+    "message": "Tips",
+    "description": "Tips tab"
+  },
+  "step1Title": {
+    "message": "Open Supported Website",
+    "description": "Step 1 title"
+  },
+  "step1Desc": {
+    "message": "Visit any website in the supported list",
+    "description": "Step 1 description"
+  },
+  "step2Title": {
+    "message": "Click Extension Icon",
+    "description": "Step 2 title"
+  },
+  "step2Desc": {
+    "message": "Click this extension icon in the browser toolbar",
+    "description": "Step 2 description"
+  },
+  "step3Title": {
+    "message": "Select Operation",
+    "description": "Step 3 title"
+  },
+  "step3Desc": {
+    "message": "Select the data type you want to fetch in the action page",
+    "description": "Step 3 description"
+  },
+  "step4Title": {
+    "message": "Send to Backend",
+    "description": "Step 4 title"
+  },
+  "step4Desc": {
+    "message": "After fetching data, you can send it to your server with one click",
+    "description": "Step 4 description"
+  },
+  "statusActive": {
+    "message": "Active",
+    "description": "Active status"
+  },
+  "statusSupported": {
+    "message": "Supported",
+    "description": "Supported status"
+  },
+  "statusPending": {
+    "message": "Coming Soon",
+    "description": "Coming soon status"
+  },
+  "moreSites": {
+    "message": "More Sites",
+    "description": "More sites"
+  },
+  "comingSoon": {
+    "message": "In Development...",
+    "description": "In development"
+  },
+  "tipQuickStart": {
+    "message": "Quick Start",
+    "description": "Quick start tip title"
+  },
+  "tipQuickStartDesc": {
+    "message": "After opening the corresponding website, click the extension icon to use",
+    "description": "Quick start tip description"
+  },
+  "tipNotice": {
+    "message": "Notice",
+    "description": "Notice tip title"
+  },
+  "tipNoticeDesc": {
+    "message": "Please make sure you have configured the backend URL and API key in the settings page",
+    "description": "Notice tip description"
+  },
+  "tipSecurity": {
+    "message": "Data Security",
+    "description": "Security tip title"
+  },
+  "tipSecurityDesc": {
+    "message": "All data is only sent to your configured backend server",
+    "description": "Security tip description"
+  },
+  "statusSupportedSite": {
+    "message": "Current page supports operations",
+    "description": "Page supported status"
+  },
+  "statusUnsupportedSite": {
+    "message": "No available operations for current page",
+    "description": "Page not supported status"
+  },
+  "siteDetected": {
+    "message": "Detected you are visiting $1, you can use data fetch feature",
+    "description": "Site detected"
+  },
+  "siteNotSupported": {
+    "message": "Current website is not in the support list, please visit a supported website and try again",
+    "description": "Site not supported"
+  },
+  "enterAction": {
+    "message": "Enter Action Page",
+    "description": "Enter action page button"
   }
 }

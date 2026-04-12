@@ -27,31 +27,72 @@
       <!-- 后端地址配置 -->
       <div class="card bg-base-100 shadow-sm mb-4">
         <div class="card-body">
-          <h2 class="card-title text-base flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-            </svg>
-            后端地址配置
-          </h2>
-          <p class="text-sm text-base-content/70 mb-3">配置数据发送的目标服务器地址</p>
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h2 class="card-title text-base">后端地址配置</h2>
+              <p class="text-sm text-base-content/70">配置数据发送的目标服务器地址</p>
+            </div>
+          </div>
 
           <div class="form-control">
             <label class="label">
               <span class="label-text">后端 URL</span>
             </label>
-            <input
-              type="url"
-              id="backend-url"
-              placeholder="https://api.example.com/collect"
-              class="input input-bordered w-full"
-            />
+            <div class="flex items-center gap-2">
+              <input
+                type="url"
+                id="backend-url"
+                placeholder="https://api.example.com"
+                class="input input-bordered flex-1"
+              />
+              <!-- URL 后缀展示 -->
+              <code id="api-path-display" class="text-xs bg-base-200 px-2 py-2 rounded text-primary whitespace-nowrap">/api/extTest</code>
+            </div>
             <label class="label">
               <span class="label-text-alt text-base-content/50">支持 http:// 或 https:// 协议</span>
             </label>
           </div>
 
+          <!-- API 路径配置（可折叠） -->
+          <div class="mt-2">
+            <button
+              type="button"
+              id="toggle-api-path-btn"
+              class="btn btn-ghost btn-xs"
+            >
+              <svg
+                id="api-path-arrow"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1 transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span id="api-path-btn-text">配置 API 路径</span>
+            </button>
+
+            <div id="api-path-panel" class="hidden mt-2 flex items-center gap-2">
+              <span class="text-base-content/50">/</span>
+              <input
+                type="text"
+                id="api-path-input"
+                placeholder="api/extTest"
+                class="input input-bordered input-sm flex-1"
+              />
+              <button id="save-api-path-btn" class="btn btn-primary btn-sm">保存</button>
+              <button id="reset-api-path-btn" class="btn btn-ghost btn-sm">重置</button>
+            </div>
+          </div>
+
           <!-- 测试连接按钮和状态 -->
-          <div class="flex items-center gap-2 mt-2">
+          <div class="flex items-center gap-2 mt-4">
             <button id="test-connection-btn" class="btn btn-outline btn-sm">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -66,13 +107,17 @@
       <!-- 请求密钥配置 -->
       <div class="card bg-base-100 shadow-sm mb-4">
         <div class="card-body">
-          <h2 class="card-title text-base flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-            </svg>
-            请求密钥配置
-          </h2>
-          <p class="text-sm text-base-content/70 mb-3">配置访问后端 API 的认证密钥</p>
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h2 class="card-title text-base">请求密钥配置</h2>
+              <p class="text-sm text-base-content/70">配置访问后端 API 的认证密钥</p>
+            </div>
+          </div>
 
           <div class="form-control">
             <label class="label">
@@ -127,6 +172,14 @@
       // DOM 元素
       const backendUrlInput = document.getElementById('backend-url');
       const apiKeyInput = document.getElementById('api-key');
+      const apiPathDisplay = document.getElementById('api-path-display');
+      const apiPathInput = document.getElementById('api-path-input');
+      const apiPathPanel = document.getElementById('api-path-panel');
+      const toggleApiPathBtn = document.getElementById('toggle-api-path-btn');
+      const apiPathArrow = document.getElementById('api-path-arrow');
+      const apiPathBtnText = document.getElementById('api-path-btn-text');
+      const resetApiPathBtn = document.getElementById('reset-api-path-btn');
+      const saveApiPathBtn = document.getElementById('save-api-path-btn');
       const testConnectionBtn = document.getElementById('test-connection-btn');
       const connectionStatus = document.getElementById('connection-status');
       const toggleKeyVisibilityBtn = document.getElementById('toggle-key-visibility');
@@ -137,12 +190,20 @@
       const toastContent = document.getElementById('toast-content');
       const toastMessage = document.getElementById('toast-message');
 
+      // 常量
+      const DEFAULT_API_PATH = '/api/extTest';
+      let currentApiPath = DEFAULT_API_PATH;
+
       // 加载保存的设置
       function loadSettings() {
         const savedUrl = localStorage.getItem('backendUrl') || '';
         const savedKey = localStorage.getItem('apiKey') || '';
+        const savedApiPath = localStorage.getItem('apiPath') || '';
         backendUrlInput.value = savedUrl;
         apiKeyInput.value = savedKey;
+        currentApiPath = savedApiPath || DEFAULT_API_PATH;
+        apiPathDisplay.textContent = currentApiPath;
+        apiPathInput.value = currentApiPath.replace(/^\//, '');
       }
 
       // 显示提示
@@ -199,6 +260,8 @@
           `;
 
           // 模拟测试结果（实际应根据真实请求结果）
+          const testUrl = getTestUrl(url);
+          console.log('测试连接 URL:', testUrl);
           const isSuccess = Math.random() > 0.3; // 70% 成功率模拟
           if (isSuccess) {
             showConnectionStatus('✓ 连接成功', 'success');
@@ -214,6 +277,47 @@
         apiKeyInput.type = isPassword ? 'text' : 'password';
         eyeIcon.classList.toggle('hidden', !isPassword);
         eyeOffIcon.classList.toggle('hidden', isPassword);
+      }
+
+      // 切换 API 路径面板显示/隐藏
+      function toggleApiPathPanel() {
+        const isHidden = apiPathPanel.classList.contains('hidden');
+        if (isHidden) {
+          apiPathPanel.classList.remove('hidden');
+          apiPathArrow.classList.add('rotate-90');
+          apiPathBtnText.textContent = '隐藏 API 路径配置';
+        } else {
+          apiPathPanel.classList.add('hidden');
+          apiPathArrow.classList.remove('rotate-90');
+          apiPathBtnText.textContent = '配置 API 路径';
+        }
+      }
+
+      // 保存 API 路径
+      function saveApiPath() {
+        let path = apiPathInput.value.trim();
+        if (path && !path.startsWith('/')) {
+          path = '/' + path;
+        }
+        currentApiPath = path || DEFAULT_API_PATH;
+        apiPathDisplay.textContent = currentApiPath;
+        toggleApiPathPanel();
+        showToast('API 路径已保存', 'success');
+      }
+
+      // 重置 API 路径为默认值
+      function resetApiPath() {
+        currentApiPath = DEFAULT_API_PATH;
+        apiPathDisplay.textContent = currentApiPath;
+        apiPathInput.value = DEFAULT_API_PATH.replace(/^\//, '');
+        toggleApiPathPanel();
+        showToast('已重置为默认路径', 'info');
+      }
+
+      // 获取完整的测试 URL
+      function getTestUrl(baseUrl) {
+        const path = currentApiPath || DEFAULT_API_PATH;
+        return baseUrl.endsWith('/') ? `${baseUrl}${path.replace(/^\//, '')}` : `${baseUrl}${path}`;
       }
 
       // 保存设置
@@ -242,6 +346,7 @@
         // 保存到 localStorage（实际扩展中使用 chrome.storage）
         localStorage.setItem('backendUrl', url);
         localStorage.setItem('apiKey', key);
+        localStorage.setItem('apiPath', currentApiPath);
 
         showToast('设置已保存', 'success');
       }
@@ -249,6 +354,9 @@
       // 事件监听
       testConnectionBtn.addEventListener('click', testConnection);
       toggleKeyVisibilityBtn.addEventListener('click', toggleKeyVisibility);
+      toggleApiPathBtn.addEventListener('click', toggleApiPathPanel);
+      saveApiPathBtn.addEventListener('click', saveApiPath);
+      resetApiPathBtn.addEventListener('click', resetApiPath);
       saveBtn.addEventListener('click', saveSettings);
 
       // 页面加载时读取设置

@@ -10,30 +10,6 @@
         width: 470px;
         min-height: 400px;
       }
-      /* tabs 样式优化 - 与卡片风格统一 */
-      .tabs-custom {
-        display: flex;
-        gap: 8px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid hsl(var(--b3));
-      }
-      .tabs-custom .tab {
-        font-weight: 500;
-        color: hsl(var(--bc) / 0.6);
-        padding: 8px 16px;
-        border-radius: 8px;
-        transition: all 0.2s;
-        cursor: pointer;
-      }
-      .tabs-custom .tab:hover {
-        color: hsl(var(--bc));
-        background-color: hsl(var(--b2));
-      }
-      .tabs-custom .tab:checked {
-        color: hsl(var(--p));
-        background-color: hsl(var(--p) / 0.1);
-        font-weight: 600;
-      }
     </style>
   </head>
   <body class="bg-base-200">
@@ -46,8 +22,8 @@
           </svg>
         </a>
         <div class="flex-1">
-          <h1 class="text-lg font-bold">Example 网站</h1>
-          <p class="text-xs text-base-content/60">example.com</p>
+          <h1 class="text-lg font-bold">新道云</h1>
+          <p class="text-xs text-base-content/60">xindaoyun.com</p>
         </div>
         <!-- 头部功能区组件 - 包含夜晚模式切换、设置和关于按钮 -->
         <div class="flex gap-2">
@@ -82,83 +58,93 @@
 
       <!-- 功能内容区域 - Tab 标签页 -->
       <div class="tabs tabs-box mb-4">
-        <input type="radio" name="action_tabs" class="tab" aria-label="🍪 Cookie" checked="checked" />
+        <!-- 添加账号 Tab -->
+        <input type="radio" name="xindaoyun_tabs" class="tab" aria-label="➕ 添加账号" checked="checked" />
         <div class="tab-content bg-base-100 border-base-300 p-4">
-          <div class="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 mb-4">
             <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <span class="text-xl">🍪</span>
-            </div>
-            <div class="flex-1">
-              <h3 class="text-sm font-semibold mb-1">获取特定 Cookie</h3>
-              <p class="text-xs text-base-content/60 mb-3">获取 example.com 的登录凭证和会话信息</p>
-              <button id="get-cookie-btn" class="btn btn-primary btn-sm w-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                获取 Cookie
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <input type="radio" name="action_tabs" class="tab" aria-label="👤 登录信息" />
-        <div class="tab-content bg-base-100 border-base-300 p-4">
-          <div class="flex items-start gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20">
-            <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
               <span class="text-xl">👤</span>
             </div>
             <div class="flex-1">
-              <h3 class="text-sm font-semibold mb-1">获取用户登录信息</h3>
-              <p class="text-xs text-base-content/60 mb-3">从 LocalStorage 读取用户登录状态和数据</p>
-              <button id="get-login-btn" class="btn btn-secondary btn-sm w-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                获取登录信息
-              </button>
+              <h3 class="text-sm font-semibold mb-1">添加账号</h3>
+              <p class="text-xs text-base-content/60">获取账号数据并提取用户名</p>
+            </div>
+          </div>
+
+          <!-- 获取数据按钮 -->
+          <button id="get-account-btn" class="btn btn-primary btn-sm w-full mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            获取账号数据
+          </button>
+
+          <!-- 用户名展示区域 -->
+          <div id="username-display" class="hidden mb-4">
+            <div class="alert alert-success">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 class="font-bold text-sm">提取成功</h3>
+                <div class="text-xs">用户名: <span id="username-value" class="font-mono font-bold text-primary"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 数据预览区域（可折叠） -->
+          <div id="account-data-display" class="collapse collapse-arrow bg-base-200 hidden">
+            <input type="checkbox" />
+            <div class="collapse-title text-sm font-medium">
+              账号数据预览
+            </div>
+            <div class="collapse-content">
+              <pre id="account-data-content" class="bg-base-300 p-3 rounded text-xs overflow-x-auto"></pre>
             </div>
           </div>
         </div>
 
-        <input type="radio" name="action_tabs" class="tab" aria-label="🛒 购物车" />
+        <!-- 分析云 Tab -->
+        <input type="radio" name="xindaoyun_tabs" class="tab" aria-label="☁️ 分析云" />
         <div class="tab-content bg-base-100 border-base-300 p-4">
-          <div class="flex items-start gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-              <span class="text-xl">🛒</span>
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-xl">☁️</span>
             </div>
             <div class="flex-1">
-              <h3 class="text-sm font-semibold mb-1">获取购物车数据</h3>
-              <p class="text-xs text-base-content/60 mb-3">读取 SessionStorage 中的购物车内容</p>
-              <button id="get-cart-btn" class="btn btn-accent btn-sm w-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                获取购物车数据
-              </button>
+              <h3 class="text-sm font-semibold mb-1">分析云</h3>
+              <p class="text-xs text-base-content/60">获取 Cookie 数据用于分析</p>
+            </div>
+          </div>
+
+          <!-- 获取 Cookie 按钮 -->
+          <button id="get-cookie-btn" class="btn btn-secondary btn-sm w-full mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            获取 Cookie 数据
+          </button>
+
+          <!-- Cookie 数据预览区域（可折叠） -->
+          <div id="cookie-data-display" class="collapse collapse-arrow bg-base-200 hidden">
+            <input type="checkbox" checked="checked" />
+            <div class="collapse-title text-sm font-medium">
+              Cookie 数据预览
+            </div>
+            <div class="collapse-content">
+              <pre id="cookie-data-content" class="bg-base-300 p-3 rounded text-xs overflow-x-auto"></pre>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 数据展示区域（可折叠） -->
-        <div id="data-display" class="collapse collapse-arrow bg-base-100 shadow-sm hidden">
-          <input type="checkbox" />
-          <div class="collapse-title text-sm font-medium">
-            已获取数据预览
-          </div>
-          <div class="collapse-content">
-            <pre id="data-content" class="bg-base-300 p-3 rounded text-xs overflow-x-auto"></pre>
-          </div>
-        </div>
-
-        <!-- 发送到后端按钮 -->
-        <button id="send-btn" class="btn btn-success w-full" disabled>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-          发送到后端
-        </button>
-      </div>
+      <!-- 发送到后端按钮 -->
+      <button id="send-btn" class="btn btn-success w-full" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+        发送到后端
+      </button>
     </div>
 
     <!-- 提示信息 -->
@@ -171,14 +157,18 @@
     <script>
       // 存储获取的数据
       let collectedData = null;
+      let currentTab = 'account';
 
       // DOM 元素
+      const getAccountBtn = document.getElementById('get-account-btn');
       const getCookieBtn = document.getElementById('get-cookie-btn');
-      const getLoginBtn = document.getElementById('get-login-btn');
-      const getCartBtn = document.getElementById('get-cart-btn');
       const sendBtn = document.getElementById('send-btn');
-      const dataDisplay = document.getElementById('data-display');
-      const dataContent = document.getElementById('data-content');
+      const usernameDisplay = document.getElementById('username-display');
+      const usernameValue = document.getElementById('username-value');
+      const accountDataDisplay = document.getElementById('account-data-display');
+      const accountDataContent = document.getElementById('account-data-content');
+      const cookieDataDisplay = document.getElementById('cookie-data-display');
+      const cookieDataContent = document.getElementById('cookie-data-content');
       const toast = document.getElementById('toast');
       const toastContent = document.getElementById('toast-content');
       const toastMessage = document.getElementById('toast-message');
@@ -193,20 +183,54 @@
         }, 3000);
       }
 
-      // 显示数据
-      function showData(data) {
-        collectedData = {
-          site: 'example.com',
-          timestamp: new Date().toISOString(),
-          data: data
-        };
-        dataContent.textContent = JSON.stringify(collectedData, null, 2);
-        dataDisplay.classList.remove('hidden');
-        sendBtn.disabled = false;
+      // 获取账号数据（模拟）
+      function getAccountData() {
+        getAccountBtn.disabled = true;
+        getAccountBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
+
+        setTimeout(() => {
+          getAccountBtn.disabled = false;
+          getAccountBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            获取账号数据
+          `;
+
+          // 模拟账号数据
+          const accountData = {
+            type: 'account',
+            username: 'zhangsan_' + Math.floor(Math.random() * 1000),
+            userId: 'user_' + Math.random().toString(36).substr(2, 8),
+            email: 'zhangsan@example.com',
+            phone: '138****8888',
+            createTime: new Date().toISOString(),
+            status: 'active'
+          };
+
+          // 显示用户名
+          usernameValue.textContent = accountData.username;
+          usernameDisplay.classList.remove('hidden');
+
+          // 显示完整数据
+          accountDataContent.textContent = JSON.stringify(accountData, null, 2);
+          accountDataDisplay.classList.remove('hidden');
+
+          // 存储数据
+          collectedData = {
+            site: 'xindaoyun.com',
+            timestamp: new Date().toISOString(),
+            data: accountData
+          };
+
+          currentTab = 'account';
+          sendBtn.disabled = false;
+          showToast('账号数据获取成功', 'success');
+        }, 1000);
       }
 
-      // 获取 Cookie（模拟）
-      function getCookie() {
+      // 获取 Cookie 数据（模拟）
+      function getCookieData() {
         getCookieBtn.disabled = true;
         getCookieBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
 
@@ -216,68 +240,36 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            获取 Cookie
+            获取 Cookie 数据
           `;
 
-          showData({
+          // 模拟 Cookie 数据
+          const cookieData = {
             type: 'cookie',
-            sessionId: 'sess_' + Math.random().toString(36).substr(2, 9),
-            authToken: 'tk_' + Math.random().toString(36).substr(2, 16),
-            userId: 'user_' + Math.floor(Math.random() * 10000)
-          });
-          showToast('Cookie 获取成功', 'success');
-        }, 1000);
-      }
+            sessionId: 'sess_' + Math.random().toString(36).substr(2, 16),
+            authToken: 'tk_' + Math.random().toString(36).substr(2, 32),
+            userToken: 'ut_' + Math.random().toString(36).substr(2, 20),
+            expiresIn: 3600,
+            domain: 'xindaoyun.com',
+            path: '/',
+            secure: true,
+            httpOnly: true
+          };
 
-      // 获取登录信息（模拟）
-      function getLoginInfo() {
-        getLoginBtn.disabled = true;
-        getLoginBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
+          // 显示 Cookie 数据
+          cookieDataContent.textContent = JSON.stringify(cookieData, null, 2);
+          cookieDataDisplay.classList.remove('hidden');
 
-        setTimeout(() => {
-          getLoginBtn.disabled = false;
-          getLoginBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            获取登录信息
-          `;
+          // 存储数据
+          collectedData = {
+            site: 'xindaoyun.com',
+            timestamp: new Date().toISOString(),
+            data: cookieData
+          };
 
-          showData({
-            type: 'localStorage',
-            isLoggedIn: true,
-            username: 'demo_user',
-            email: 'user@example.com',
-            loginTime: new Date().toISOString()
-          });
-          showToast('登录信息获取成功', 'success');
-        }, 1000);
-      }
-
-      // 获取购物车数据（模拟）
-      function getCartData() {
-        getCartBtn.disabled = true;
-        getCartBtn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> 获取中...`;
-
-        setTimeout(() => {
-          getCartBtn.disabled = false;
-          getCartBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            获取购物车数据
-          `;
-
-          showData({
-            type: 'sessionStorage',
-            cartId: 'cart_' + Math.random().toString(36).substr(2, 8),
-            items: [
-              { id: 1, name: '商品 A', price: 99.99, quantity: 2 },
-              { id: 2, name: '商品 B', price: 49.99, quantity: 1 }
-            ],
-            total: 249.97
-          });
-          showToast('购物车数据获取成功', 'success');
+          currentTab = 'cookie';
+          sendBtn.disabled = false;
+          showToast('Cookie 数据获取成功', 'success');
         }, 1000);
       }
 
@@ -314,11 +306,10 @@
           `;
 
           // 模拟发送结果
-          const isSuccess = Math.random() > 0.2; // 80% 成功率
+          const isSuccess = Math.random() > 0.2;
           if (isSuccess) {
-            showToast('数据发送成功', 'success');
+            showToast(`${currentTab === 'account' ? '账号' : 'Cookie'}数据发送成功`, 'success');
             collectedData = null;
-            dataDisplay.classList.add('hidden');
             sendBtn.disabled = true;
           } else {
             showToast('发送失败，请检查网络或配置', 'error');
@@ -327,9 +318,8 @@
       }
 
       // 事件监听
-      getCookieBtn.addEventListener('click', getCookie);
-      getLoginBtn.addEventListener('click', getLoginInfo);
-      getCartBtn.addEventListener('click', getCartData);
+      getAccountBtn.addEventListener('click', getAccountData);
+      getCookieBtn.addEventListener('click', getCookieData);
       sendBtn.addEventListener('click', sendToBackend);
 
       // 主题切换功能
