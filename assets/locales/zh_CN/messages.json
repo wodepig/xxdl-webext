@@ -318,5 +318,25 @@
   "saveApiPath": {
     "message": "保存",
     "description": "保存按钮"
+  },
+  "themeConfigTitle": {
+    "message": "主题配置",
+    "description": "主题配置标题"
+  },
+  "themeConfigDesc": {
+    "message": "选择您喜欢的界面主题风格",
+    "description": "主题配置描述"
+  },
+  "themeLabel": {
+    "message": "主题",
+    "description": "主题标签"
+  },
+  "themeHint": {
+    "message": "选择一个主题来个性化您的界面",
+    "description": "主题提示"
+  },
+  "themeApplied": {
+    "message": "主题已应用",
+    "description": "主题已应用提示"
   }
 }

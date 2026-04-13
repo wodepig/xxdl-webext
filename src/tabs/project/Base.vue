@@ -42,16 +42,20 @@
 import "~/style.css"
 import { ref, onMounted } from "vue"
 import { t } from "~/utils/i18n"
+import { loadAndApplyTheme } from "~/composables/useTheme"
 
 const siteName = ref('网站名称')
 const siteDomain = ref('domain.com')
 
-onMounted(() => {
+onMounted(async () => {
+  // 加载并应用主题
+  await loadAndApplyTheme()
+
   // 从 URL 参数获取网站信息
   const urlParams = new URLSearchParams(window.location.search)
   const name = urlParams.get('name')
   const domain = urlParams.get('domain')
-  
+
   if (name) siteName.value = name
   if (domain) siteDomain.value = domain
 })

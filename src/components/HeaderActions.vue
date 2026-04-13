@@ -1,14 +1,14 @@
 <template>
   <div class="flex gap-2">
-    <!-- 夜晚模式切换按钮 -->
+    <!-- 主题切换按钮 -->
     <button
       class="btn btn-ghost btn-sm"
-      :title="isDark ? '切换到白天模式' : '切换到夜晚模式'"
+      :title="currentTheme === 'dark' ? '切换到白天模式' : '切换到夜晚模式'"
       @click="toggleTheme"
     >
       <!-- 太阳图标（白天模式显示） -->
       <svg
-        v-if="!isDark"
+        v-if="currentTheme !== 'dark'"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         fill="none"
@@ -86,38 +86,35 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
+import { Storage } from "@plasmohq/storage"
 import { t } from "~/utils/i18n"
+import { applyTheme } from "~/composables/useTheme"
 
 /**
  * 头部功能区组件
  * 包含主题切换、设置和关于按钮
  */
 
-/** 是否深色模式 */
-const isDark = ref(false)
+// Storage 实例
+const storage = new Storage()
 
-onMounted(() => {
-  // 从 localStorage 读取主题设置
-  const savedTheme = localStorage.getItem('theme')
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+/** 当前主题 */
+const currentTheme = ref('light')
 
-  // 初始化主题
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    isDark.value = true
-    document.documentElement.setAttribute('data-theme', 'dark')
-  } else {
-    isDark.value = false
-    document.documentElement.setAttribute('data-theme', 'light')
-  }
+onMounted(async () => {
+  // 从 storage 读取主题设置
+  const savedTheme = await storage.get('theme') || 'light'
+  currentTheme.value = savedTheme
 })
 
 /**
  * 切换主题
+ * 在 light 和 dark 之间切换
  */
-function toggleTheme() {
-  isDark.value = !isDark.value
-  const newTheme = isDark.value ? 'dark' : 'light'
-  document.documentElement.setAttribute('data-theme', newTheme)
-  localStorage.setItem('theme', newTheme)
+async function toggleTheme() {
+  const newTheme = currentTheme.value === 'dark' ? 'light' : 'dark'
+  currentTheme.value = newTheme
+  await storage.set('theme', newTheme)
+  applyTheme(newTheme)
 }
 </script>

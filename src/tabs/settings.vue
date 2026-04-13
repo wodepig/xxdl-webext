@@ -82,6 +82,39 @@
       </div>
     </div>
 
+    <!-- 主题配置 -->
+    <div class="card bg-base-100 shadow-sm mb-4">
+      <div class="card-body">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h2 class="card-title text-base">{{ t('themeConfigTitle') }}</h2>
+            <p class="text-sm text-base-content/70">{{ t('themeConfigDesc') }}</p>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">{{ t('themeLabel') }}</span>
+          </label>
+          <select v-model="selectedTheme" @change="applyTheme" class="select select-bordered w-full">
+            <option v-for="theme in themes" :key="theme" :value="theme">
+              {{ theme }}
+            </option>
+          </select>
+          <label class="label">
+            <span class="label-text-alt text-base-content/50">{{ t('themeHint') }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
     <!-- 请求密钥配置 -->
     <div class="card bg-base-100 shadow-sm mb-4">
       <div class="card-body">
@@ -157,6 +190,7 @@ import { t } from "~/utils/i18n"
 import Toast from "~/components/Toast.vue"
 import HeaderActions from "~/components/HeaderActions.vue"
 import { httpClient } from "~/utils/http-client"
+import { applyTheme as applyThemeToDoc } from "~/composables/useTheme"
 
 // ==================== Storage 实例 ====================
 /** Plasmo Storage 实例，用于跨上下文持久化存储 */
@@ -183,14 +217,32 @@ const connectionStatus = ref('')
 const connectionStatusType = ref('')
 /** Toast 组件引用 */
 const toastRef = ref<InstanceType<typeof Toast>>()
+/** 当前选中的主题 */
+const selectedTheme = ref('light')
+
+// ==================== DaisyUI 35 个内置主题 ====================
+const themes = [
+  'light', 'dark','lofi', 'dracula',
+  'cmyk', 'wireframe', 'pastel','silk','forest'
+]
+const alltheme = [
+  'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave',
+  'retro', 'cyberpunk', 'valentine', 'halloween', 'garden', 'forest', 'aqua',
+  'lofi', 'pastel', 'fantasy', 'wireframe', 'black', 'luxury', 'dracula',
+  'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee',
+  'winter', 'dim', 'nord', 'sunset', 'caramellatte', 'abyss', 'silk'
+]
 
 // ==================== 常量 ====================
 /** 默认 API 路径 */
 const DEFAULT_API_PATH = '/api/extTest'
 
 // ==================== 生命周期 ====================
-onMounted(() => {
-  loadSettings()
+onMounted(async () => {
+  // 加载并应用主题
+  const savedTheme = await storage.get('theme') || 'light'
+  applyThemeToDoc(savedTheme)
+  await loadSettings()
 })
 
 // ==================== 方法 ====================
@@ -204,6 +256,8 @@ async function loadSettings() {
   apiPath.value = await storage.get('apiPath') || ''
   // 去掉开头的 /，方便用户输入
   apiPathInput.value = apiPath.value.replace(/^\//, '')
+  // 加载主题设置
+  selectedTheme.value = await storage.get('theme') || 'light'
 }
 
 /**
@@ -211,6 +265,17 @@ async function loadSettings() {
  */
 function toggleKeyVisibility() {
   showKey.value = !showKey.value
+}
+
+/**
+ * 应用主题到页面
+ * 保存主题设置并应用到 document
+ */
+async function applyTheme() {
+  const theme = selectedTheme.value
+  await storage.set('theme', theme)
+  applyThemeToDoc(theme)
+  toastRef.value?.show({ message: t('themeApplied'), type: 'success' })
 }
 
 /**

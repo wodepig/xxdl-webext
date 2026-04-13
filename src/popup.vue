@@ -200,6 +200,7 @@ import Tabs from "~/components/Tabs.vue"
 import HeaderActions from "~/components/HeaderActions.vue"
 import { supportedSites, getMatchedProject } from "~/utils/tab-utils"
 import type { ProjectConf as ProjectConfType } from "~/types/project"
+import { loadAndApplyTheme } from "~/composables/useTheme"
 
 // Toast 引用
 const toastRef = ref<InstanceType<typeof Toast>>()
@@ -218,6 +219,8 @@ const tabs = computed(() => [
 ])
 
 onMounted(async () => {
+  // 加载并应用主题
+  await loadAndApplyTheme()
   await checkCurrentPage()
 })
 

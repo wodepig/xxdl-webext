@@ -114,9 +114,10 @@
 
 <script setup lang="ts">
 import "~/style.css"
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { t } from "~/utils/i18n"
 import Tabs from "~/components/Tabs.vue"
+import { loadAndApplyTheme } from "~/composables/useTheme"
 
 const activeTab = ref('features')
 
@@ -124,6 +125,11 @@ const tabs = computed(() => [
   { key: 'features', label: t('tabFeatures') },
   { key: 'help', label: t('tabHelp') }
 ])
+
+onMounted(async () => {
+  // 加载并应用主题
+  await loadAndApplyTheme()
+})
 
 function goBack() {
   window.history.back()

@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import "~/style.css"
 import { ref, onMounted, shallowRef } from "vue"
 import type { Component } from "vue"
 // 静态导入所有项目组件
@@ -36,6 +37,7 @@ import Xindao from "./project/xindao.vue"
 import Example from "./project/example.vue"
 import Shein from "./project/shein.vue"
 import Bilibili from "./project/bilibili.vue"
+import { loadAndApplyTheme } from "~/composables/useTheme"
 
 /**
  * 项目页面动态加载组件
@@ -58,6 +60,9 @@ const currentComponent = shallowRef<Component | null>(null)
 const loading = ref(true)
 
 onMounted(async () => {
+  // 加载并应用主题
+  await loadAndApplyTheme()
+
   console.log('[Project] 页面挂载，开始加载组件')
   console.log('[Project] 可用组件:', Object.keys(componentMap))
 

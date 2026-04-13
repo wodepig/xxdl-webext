@@ -135,6 +135,7 @@
 </template>
 
 <script setup lang="ts">
+import "~/style.css"
 import { ref, computed, onMounted } from "vue"
 import { t } from "~/utils/i18n"
 import HeaderActions from "~/components/HeaderActions.vue"
@@ -143,6 +144,7 @@ import Toast from "~/components/Toast.vue"
 import { getCookies, getAllLocalStorage, getAllSessionStorage, getLocalStorage ,getCurrentTab} from '~/utils/common'
 import { Storage } from "@plasmohq/storage"
 import type { ProjectConf } from '~/types/project'
+import { loadAndApplyTheme } from "~/composables/useTheme"
 
 // Storage 实例
 const storage = new Storage()
@@ -158,6 +160,8 @@ const activeTab = ref('account')
 
 // 页面加载时获取项目配置
 onMounted(async () => {
+  // 加载并应用主题
+  await loadAndApplyTheme()
   // TODO: 加载项目配置
 })
 
