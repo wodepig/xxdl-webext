@@ -156,25 +156,26 @@ export async function setSessionStorage(key: string, value: string): Promise<voi
 
 /**
  * 获取当前标签页的所有 Cookie
+ * 通过发送消息给 content script 执行 document.cookie 获取
  * @returns Cookie 数组
  */
-export async function getCookies(): Promise<Cookie[]> {
+export async function getCookies(): Promise<Array<{ name: string; value: string; domain?: string }>> {
   console.log('[common] 获取当前标签页 cookies')
 
   const tab = await getCurrentTab()
 
-  if (!tab.url) {
-    throw new Error("标签页 URL 为空")
+  if (!tab.id) {
+    throw new Error("标签页 ID 为空")
   }
 
-  try {
-    const cookies = await chrome.cookies.getAll({ url: tab.url })
-    console.log('[common] 当前标签页 cookies:', cookies)
-    return cookies
-  } catch (error) {
-    console.error('[common] 获取 cookies 失败:', error)
-    throw error
+  const response = await chrome.tabs.sendMessage(tab.id, { type: 'GET_COOKIES' })
+
+  if (!response.success) {
+    throw new Error(response.error || '获取 cookies 失败')
   }
+
+  console.log('[common] 当前标签页 cookies:', response.data)
+  return response.data
 }
 
 /**
