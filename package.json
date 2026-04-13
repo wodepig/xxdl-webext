@@ -34,7 +34,10 @@
     "default_locale": "zh_CN",
     "permissions": [
       "action",
-      "tabs"
+      "tabs",
+      "cookies",
+      "storage",
+      "scripting"
     ],
     "host_permissions": [
       "https://*/*"

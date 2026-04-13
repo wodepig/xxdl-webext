@@ -33,6 +33,9 @@ import type { Component } from "vue"
 // 静态导入所有项目组件
 import Base from "./project/Base.vue"
 import Xindao from "./project/xindao.vue"
+import Example from "./project/example.vue"
+import Shein from "./project/shein.vue"
+import Bilibili from "./project/bilibili.vue"
 
 /**
  * 项目页面动态加载组件
@@ -44,7 +47,9 @@ const componentMap: Record<string, Component> = {
   'Base': Base,
   'base': Base,
   'xindao': Xindao,
-  'Xindao': Xindao
+  'shein': Shein,
+  'bilibili': Bilibili,
+  'example': Example
 }
 
 /** 当前加载的组件 */
@@ -55,7 +60,7 @@ const loading = ref(true)
 onMounted(async () => {
   console.log('[Project] 页面挂载，开始加载组件')
   console.log('[Project] 可用组件:', Object.keys(componentMap))
-  
+
   // 获取 URL 参数
   const urlParams = new URLSearchParams(window.location.search)
   const fileName = urlParams.get('fileName') || 'Base'

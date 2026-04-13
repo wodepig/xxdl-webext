@@ -176,7 +176,8 @@
         </div>
       </template>
     </Tabs>
-
+    <!-- Toast 提示 -->
+    <Toast ref="toastRef" />
     <!-- 隐藏的项目页面链接，用于动态跳转 -->
     <a :href="projectUrl" ref="projectLinkRef" class="hidden" aria-hidden="true"></a>
   </div>
@@ -192,6 +193,7 @@
 
 <script setup lang="ts">
 import "./style.css"
+import Toast from "~/components/Toast.vue"
 import { ref, onMounted, computed, nextTick } from "vue"
 import { t } from "~/utils/i18n"
 import Tabs from "~/components/Tabs.vue"
@@ -199,6 +201,8 @@ import HeaderActions from "~/components/HeaderActions.vue"
 import { supportedSites, getMatchedProject } from "~/utils/tab-utils"
 import type { ProjectConf as ProjectConfType } from "~/types/project"
 
+// Toast 引用
+const toastRef = ref<InstanceType<typeof Toast>>()
 /** 当前匹配的项目 */
 const currentProject = ref<ProjectConfType | null>(null)
 /** 项目操作页面链接 */
@@ -231,6 +235,8 @@ async function checkCurrentPage() {
     nextTick(() => {
       projectLinkRef.value?.click()
     })
+  }else{
+        toastRef.value?.show({ message: '未获取到支持的项目', type: 'warning' })
   }
 }
 

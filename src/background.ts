@@ -17,14 +17,10 @@ interface HttpRequestMessage {
 }
 
 /**
- * 监听来自其他页面的 HTTP 请求消息
- * 通过 Background 发送请求可以绕过 CORS 限制
+ * 监听来自其他页面的消息
  */
-chrome.runtime.onMessage.addListener((
-  request: HttpRequestMessage,
-  sender,
-  sendResponse: (response: { success: true; data: HttpResponse<unknown> } | { success: false; error: string }) => void
-) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // HTTP 请求代理
   if (request.type === 'HTTP_REQUEST') {
     const { method, url, body, headers } = request
 
@@ -46,6 +42,112 @@ chrome.runtime.onMessage.addListener((
       })
 
     // 返回 true 表示异步响应
+    return true
+  }
+
+  // 获取 localStorage
+  if (request.type === 'GET_LOCAL_STORAGE') {
+    const { tabId, key } = request
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: (k) => localStorage.getItem(k),
+      args: [key]
+    }).then(results => {
+      sendResponse({ success: true, data: results[0]?.result })
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message })
+    })
+    return true
+  }
+
+  // 获取所有 localStorage
+  if (request.type === 'GET_ALL_LOCAL_STORAGE') {
+    const { tabId } = request
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        const data: Record<string, string> = {}
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (key) {
+            data[key] = localStorage.getItem(key) || ''
+          }
+        }
+        return data
+      }
+    }).then(results => {
+      sendResponse({ success: true, data: results[0]?.result })
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message })
+    })
+    return true
+  }
+
+  // 设置 localStorage
+  if (request.type === 'SET_LOCAL_STORAGE') {
+    const { tabId, key, value } = request
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: (k, v) => localStorage.setItem(k, v),
+      args: [key, value]
+    }).then(() => {
+      sendResponse({ success: true })
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message })
+    })
+    return true
+  }
+
+  // 获取 sessionStorage
+  if (request.type === 'GET_SESSION_STORAGE') {
+    const { tabId, key } = request
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: (k) => sessionStorage.getItem(k),
+      args: [key]
+    }).then(results => {
+      sendResponse({ success: true, data: results[0]?.result })
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message })
+    })
+    return true
+  }
+
+  // 获取所有 sessionStorage
+  if (request.type === 'GET_ALL_SESSION_STORAGE') {
+    const { tabId } = request
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        const data: Record<string, string> = {}
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i)
+          if (key) {
+            data[key] = sessionStorage.getItem(key) || ''
+          }
+        }
+        return data
+      }
+    }).then(results => {
+      sendResponse({ success: true, data: results[0]?.result })
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message })
+    })
+    return true
+  }
+
+  // 设置 sessionStorage
+  if (request.type === 'SET_SESSION_STORAGE') {
+    const { tabId, key, value } = request
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: (k, v) => sessionStorage.setItem(k, v),
+      args: [key, value]
+    }).then(() => {
+      sendResponse({ success: true })
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message })
+    })
     return true
   }
 })

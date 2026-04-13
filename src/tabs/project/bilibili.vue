@@ -9,8 +9,8 @@
           </svg>
         </button>
         <div>
-          <h1 class="text-lg font-bold">{{ projectConfig?.name || '新道云' }}</h1>
-          <p class="text-xs text-base-content/60">{{ projectConfig?.matchUrl?.join(',') || 'xindaoyun.com' }}</p>
+          <h1 class="text-lg font-bold">{{ projectConfig?.name || 'Bilibili' }}</h1>
+          <p class="text-xs text-base-content/60">{{ projectConfig?.matchUrl?.join(',') || 'bilibili.com' }}</p>
         </div>
       </div>
       <HeaderActions />
@@ -26,8 +26,8 @@
     </div>
 
     <!-- 功能内容区域 - Tab 标签页 -->
-    <Tabs v-model="activeTab" :tabs="tabs" name="xindaoyun_tabs" custom-class="mb-4">
-      <!-- 添加账号 Tab -->
+    <Tabs v-model="activeTab" :tabs="tabs" name="bilibili_tabs" custom-class="mb-4">
+      <!-- 账号 Tab -->
       <template #account>
         <div class="bg-base-100 border border-base-300 p-4 rounded-box">
           <div class="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 mb-4">
@@ -35,8 +35,8 @@
               <span class="text-xl">👤</span>
             </div>
             <div class="flex-1">
-              <h3 class="text-sm font-semibold mb-1">添加账号</h3>
-              <p class="text-xs text-base-content/60">获取账号数据并提取用户名</p>
+              <h3 class="text-sm font-semibold mb-1">账号</h3>
+              <p class="text-xs text-base-content/60">获取账号数据</p>
             </div>
           </div>
 
@@ -51,7 +51,7 @@
             {{ gettingAccount ? '获取中...' : '获取账号数据' }}
           </button>
 
-          <!-- 用户名展示区域 -->
+          <!-- 数据展示区域 -->
           <div v-if="accountData" class="mb-4">
             <div class="alert alert-success">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 stroke-current" fill="none"
@@ -61,8 +61,7 @@
               </svg>
               <div>
                 <h3 class="font-bold text-sm">提取成功</h3>
-                <div class="text-xs">用户名: <span class="font-mono font-bold text-primary">{{ accountData.userName
-                    }}</span></div>
+                <div class="text-xs">数据已获取</div>
               </div>
             </div>
           </div>
@@ -71,7 +70,7 @@
           <div v-if="accountData" class="collapse collapse-arrow bg-base-200">
             <input type="checkbox" />
             <div class="collapse-title text-sm font-medium">
-              账号数据预览
+              数据预览
             </div>
             <div class="collapse-content">
               <pre
@@ -81,16 +80,16 @@
         </div>
       </template>
 
-      <!-- 分析云 Tab -->
+      <!-- Cookie Tab -->
       <template #cookie>
         <div class="bg-base-100 border border-base-300 p-4 rounded-box">
           <div class="flex items-start gap-3 p-3 rounded-lg bg-secondary/5 border border-secondary/20 mb-4">
             <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
-              <span class="text-xl">☁️</span>
+              <span class="text-xl">🍪</span>
             </div>
             <div class="flex-1">
-              <h3 class="text-sm font-semibold mb-1">分析云</h3>
-              <p class="text-xs text-base-content/60">获取 Cookie 数据用于分析</p>
+              <h3 class="text-sm font-semibold mb-1">Cookie</h3>
+              <p class="text-xs text-base-content/60">获取 Cookie 数据</p>
             </div>
           </div>
 
@@ -138,14 +137,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue"
 import { t } from "~/utils/i18n"
+import { getCookies, getAllLocalStorage, getAllSessionStorage, getLocalStorage ,getCurrentTab} from '~/utils/common'
 import HeaderActions from "~/components/HeaderActions.vue"
 import Tabs from "~/components/Tabs.vue"
-
 import Toast from "~/components/Toast.vue"
-import { getCookies, getAllLocalStorage, getAllSessionStorage, getLocalStorage ,getCurrentTab} from '~/utils/common'
 import { Storage } from "@plasmohq/storage"
-import { httpClient } from "~/utils/http-client"
-import { supportedSites, matchProjectConf} from "~/utils/tab-utils"
 import type { ProjectConf } from '~/types/project'
 
 // Storage 实例
@@ -162,39 +158,13 @@ const activeTab = ref('account')
 
 // 页面加载时获取项目配置
 onMounted(async () => {
-  await loadProjectConfig()
+  // TODO: 加载项目配置
 })
-
-/**
- * 加载项目配置
- * 通过匹配当前标签页获取对应的项目配置
- */
-async function loadProjectConfig() {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (!tab) return
-
-    // 查找匹配的项目配置
-    for (const project of supportedSites) {
-      try {
-        if (matchProjectConf(tab, project)) {
-          projectConfig.value = project
-          console.log('[xindao] 匹配到项目配置:', project)
-          return
-        }
-      } catch {
-        continue
-      }
-    }
-  } catch (error) {
-    console.error('[xindao] 加载项目配置失败:', error)
-  }
-}
 
 // Tab 配置
 const tabs = computed(() => [
-  { key: 'account', label: '➕ 添加账号' },
-  { key: 'cookie', label: '☁️ 分析云' }
+  { key: 'account', label: '👤 账号' },
+  { key: 'cookie', label: '🍪 Cookie' }
 ])
 
 // 状态
@@ -219,128 +189,31 @@ function goBack() {
 }
 
 /**
- * 获取账号数据（模拟）
+ * 获取账号数据
  */
 async function getAccountData() {
-  try {
-    gettingAccount.value = true
-    await getAccountBody()
-
-    gettingAccount.value = false
-    toastRef.value?.show({ message: '账号数据获取成功', type: 'success' })
-  } catch (error) {
-    gettingAccount.value = false
-    toastRef.value?.show({ message: error.message, type: 'error' })
+  // TODO: 实现获取账号数据逻辑
+    // TODO: 实现获取账号数据逻辑
+  const data = await getLocalStorage('CON_HIS_LOCAL')
+  console.log(data);
+  accountData.value = {
+    ...JSON.parse(data)
   }
-  gettingAccount.value = false
-
+  
 }
-
-// 获取添加账号的请求体
-async function getAccountBody(){
-const qsStr = await getLocalStorage('qs')
-    if (!qsStr) {
-      throw new Error("qs数据不存在");
-
-    }
-   
-    const qsData =JSON.parse(qsStr)
-     console.log('qsData', qsData);
-    // const classData = data.qs
-
-    const seesData = getAllSessionStorage()
-    console.log('getAllSessionStorage', seesData);
-    const tab = await getCurrentTab()
-    console.log('tab', tab);
-    const url = new URL(tab.url)
-    
-    accountData.value = {
-      accessKey:await storage.get('apiKey') || '',
-      userName: qsData.userName,
-      courseName: qsData.courseName,
-      qsData: qsData,
-      classData: {},
-      baseUrl: url.origin + '/'
-    }
-    console.log('请求数据:', accountData.value);
-
-}
-
 
 /**
- * 获取 Cookie 数据（模拟）
+ * 获取 Cookie 数据
  */
 async function getCookieData() {
-  gettingCookie.value = true
-
-  // 模拟延迟
-  await new Promise(resolve => setTimeout(resolve, 1000))
-
-  // 模拟 Cookie 数据
-  cookieData.value = {
-    type: 'cookie',
-    sessionId: 'sess_' + Math.random().toString(36).substr(2, 16),
-    authToken: 'tk_' + Math.random().toString(36).substr(2, 32),
-    userToken: 'ut_' + Math.random().toString(36).substr(2, 20),
-    expiresIn: 3600,
-    domain: 'xindaoyun.com',
-    path: '/',
-    secure: true,
-    httpOnly: true
-  }
-
-  gettingCookie.value = false
-  toastRef.value?.show({ message: 'Cookie 数据获取成功', type: 'success' })
+  // TODO: 实现获取 Cookie 数据逻辑
 }
 
 /**
  * 发送到后端
  */
 async function sendToBackend() {
-  // 获取设置
-  const backendUrl = await storage.get('backendUrl') as string
-  const apiKey = await storage.get('apiKey') as string
-
-  if (!backendUrl || !apiKey) {
-    toastRef.value?.show({ message: '请先配置后端地址和密钥', type: 'warning' })
-    return
-  }
-
-  // 准备发送的数据
-  const dataToSend = activeTab.value === 'account' ? accountData.value : cookieData.value
-  if (!dataToSend) {
-    toastRef.value?.show({ message: '请先获取数据', type: 'warning' })
-    return
-  }
-
-  const uri = activeTab.value === 'account' ? '/api/plu/adduser' : '/api/plu/addFenxiYun'
-  sending.value = true
-
-  try {
-    // 这里应该调用实际的 API
-    const result = await httpClient.post<{ code: number; msg: string; data: string | null }>(`${backendUrl}${uri}`, 
-      dataToSend
-    )
-    // 校验响应数据
-    if (result.data.code === 200) {
-    toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送成功`, type: 'success' })
-
-    } else {
-    toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送失败:${result.data.msg}` , type: 'error' })
-
-    }
-    // 模拟成功
-
-    // 清空数据
-    if (activeTab.value === 'account') {
-      accountData.value = null
-    } else {
-      cookieData.value = null
-    }
-  } catch (error) {
-    toastRef.value?.show({ message: '发送失败，请检查网络或配置', type: 'error' })
-  } finally {
-    sending.value = false
-  }
+  // 模拟发送后端，直接提示成功
+  toastRef.value?.show({ message: '数据发送成功', type: 'success' })
 }
 </script>

@@ -17,10 +17,28 @@ export const supportedSites: ProjectConf[] = [
     id: 2,
     name: '新道云',
     description: '处理新道云和分析云的账号自动添加',
-    matchUrl: ['seentao.com'],
+    matchUrl: ['seentao.com','analysis.com'],
     matchTitle: ['新道云','分析云'],
     backendKey: 'another',
     fileName: 'xindao'
+  },
+    {
+    id: 3,
+    name: '希音',
+    description: '处理希音的账号自动添加',
+    matchUrl: ['shein.com','analysis.com'],
+    matchTitle: ['新道云','分析云'],
+    backendKey: 'another',
+    fileName: 'shein'
+  },
+      {
+    id: 4,
+    name: 'B站',
+    description: 'B站测试',
+    matchUrl: ['bilibili.com'],
+    matchTitle: ['B站','哔哩哔哩'],
+    backendKey: 'another',
+    fileName: 'bilibili'
   }
 ]
 
