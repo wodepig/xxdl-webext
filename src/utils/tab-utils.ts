@@ -15,10 +15,10 @@ export const supportedSites: ProjectConf[] = [
   },
   {
     id: 2,
-    name: 'Another 网站',
-    description: '另一个示例网站',
+    name: '新道云',
+    description: '处理新道云和分析云的账号自动添加',
     matchUrl: ['seentao.com'],
-    matchTitle: ['新道云'],
+    matchTitle: ['新道云','分析云'],
     backendKey: 'another',
     fileName: 'xindao'
   }
@@ -40,6 +40,7 @@ export function matchProjectConf(tab: chrome.tabs.Tab | null, projectConf: Proje
   if (!projectConf.matchUrl.length || !projectConf.matchTitle.length) {
     throw new Error("项目配置匹配url或标题为空")
   }
+  console.log('匹配项目配置:', projectConf, tab.url, tab.title)
   return projectConf.matchUrl.some(url => tab.url!.includes(url)) ||
     projectConf.matchTitle.some(title => tab.title!.includes(title))
 }
@@ -50,12 +51,15 @@ export function matchProjectConf(tab: chrome.tabs.Tab | null, projectConf: Proje
  */
 export async function getMatchedProject(): Promise<ProjectConf | null> {
   try {
+    console.log('获取当前标签页匹配的项目配置')
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    console.log('当前标签页:', tab)
     if (!tab?.url || !tab.title) {
       return null
     }
 
     for (const project of supportedSites) {
+      console.log('检查项目配置:', project)
       try {
         if (matchProjectConf(tab, project)) {
           return project

@@ -1,13 +1,16 @@
 <template>
   <div class="p-4 w-[470px] min-h-[400px] bg-base-200">
     <!-- 头部区域 -->
-    <div class="flex items-center gap-3 mb-4">
-      <button @click="goBack" class="btn btn-ghost btn-sm btn-circle" :title="t('backToHome')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-      </button>
-      <h1 class="text-lg font-bold">{{ t('aboutTitle') }}</h1>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <button @click="goBack" class="btn btn-ghost btn-sm btn-circle" :title="t('backToHome')">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <h1 class="text-lg font-bold">{{ t('aboutTitle') }}</h1>
+      </div>
+      <HeaderActions />
     </div>
 
     <!-- 扩展信息卡片 -->
@@ -117,6 +120,7 @@ import "~/style.css"
 import { ref, computed } from "vue"
 import { t } from "~/utils/i18n"
 import Tabs from "~/components/Tabs.vue"
+import HeaderActions from "~/components/HeaderActions.vue"
 
 const activeTab = ref('features')
 

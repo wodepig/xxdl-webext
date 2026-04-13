@@ -1,3 +1,7 @@
+
+问题
+跳转问题
+权限问题
 ## 性能优化
 https://zhuanlan.zhihu.com/p/194666183981659053
 https://developer.chrome.google.cn/docs/extensions/reference/api/action?hl=zh-cn

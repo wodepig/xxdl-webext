@@ -32,8 +32,9 @@
   },
   "manifest": {
     "default_locale": "zh_CN",
-        "permissions": [
-        "action"
+    "permissions": [
+      "action",
+      "tabs"
     ],
     "host_permissions": [
       "https://*/*"
