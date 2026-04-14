@@ -70,7 +70,7 @@ jobs:
           auto_push: true
   send-notification:
     if: always() && (contains(github.event.head_commit.message, '部署') || contains(github.event.head_commit.message, '自动更新'))
-    needs: [build-push, remote-deploy]
+    needs: [build-push]
     env:
       SCT_AK: ${{ vars.SCT_AK }}
     runs-on: ubuntu-latest
