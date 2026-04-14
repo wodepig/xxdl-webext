@@ -26,8 +26,8 @@ export const supportedSites: ProjectConf[] = [
     id: 3,
     name: '希音',
     description: '处理希音的账号自动添加',
-    matchUrl: ['shein.com','analysis.com'],
-    matchTitle: ['新道云','分析云'],
+    matchUrl: ['shein.com'],
+    matchTitle: ['我的订单','希音','卖家中心'],
     backendKey: 'another',
     fileName: 'shein'
   },

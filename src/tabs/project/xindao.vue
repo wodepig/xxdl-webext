@@ -339,8 +339,7 @@ async function getAccountData() {
 async function getAccountBody(){
 const qsStr = await getLocalStorage('qs')
     if (!qsStr) {
-      throw new Error("qs数据不存在");
-
+      throw new Error("qs数据不存在, 尝试设置中清空内容重登");
     }
    
     const qsData =JSON.parse(qsStr)
@@ -373,11 +372,13 @@ const qsStr = await getLocalStorage('qs')
 async function getCookieData() {
   gettingCookie.value = true
 
-  const ck = await getCookies()
-  if(!ck){
+  const ckData = await getCookies()
+  if(!ckData){
     throw new Error("Cookie 数据不存在");
   }
-  console.log('ck', ck);
+  console.log('ckData', ckData);
+   // 将 cookie 数组格式化为 key=value;key=value 格式
+  const ck =  ckData.map(cookie => `${cookie.name}=${cookie.value}`).join(';')
   // 模拟延迟
   await new Promise(resolve => setTimeout(resolve, 1000))
   const tab = await getCurrentTab()

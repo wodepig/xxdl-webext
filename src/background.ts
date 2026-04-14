@@ -6,6 +6,65 @@
 import { http, HttpResponse, HttpError } from "./utils/http"
 
 /**
+ * 获取当前标签页
+ * @returns 当前标签页对象
+ */
+async function getCurrentTab(): Promise<chrome.tabs.Tab> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  if (!tab) {
+    throw new Error("无法获取当前标签页")
+  }
+  return tab
+}
+
+/**
+ * 获取当前标签页的所有 Cookie
+ * 使用 chrome.cookies API 获取所有 cookie（包括 HttpOnly）
+ * @returns Cookie 数组
+ */
+async function getCookies(): Promise<Array<{ name: string; value: string; domain?: string; httpOnly?: boolean; secure?: boolean; sameSite?: string }>> {
+  const tab = await getCurrentTab()
+
+  if (!tab.url) {
+    throw new Error("标签页 URL 为空")
+  }
+
+  try {
+    const url = new URL(tab.url)
+    const hostname = url.hostname
+    const parentDomain = hostname.split('.').slice(-2).join('.')
+
+    // 获取当前页面相关的所有 cookie
+    const [urlCookies, domainCookies, exactDomainCookies] = await Promise.all([
+      chrome.cookies.getAll({ url: tab.url }),
+      chrome.cookies.getAll({ domain: parentDomain }),
+      chrome.cookies.getAll({ domain: hostname })
+    ])
+
+    // 合并并去重
+    const cookieMap = new Map()
+    ;[...urlCookies, ...domainCookies, ...exactDomainCookies].forEach(cookie => {
+      cookieMap.set(`${cookie.name}@${cookie.domain}`, cookie)
+    })
+
+    const cookies = Array.from(cookieMap.values())
+
+    // 返回简化的 cookie 信息
+    return cookies.map(cookie => ({
+      name: cookie.name,
+      value: cookie.value,
+      domain: cookie.domain,
+      httpOnly: cookie.httpOnly,
+      secure: cookie.secure,
+      sameSite: cookie.sameSite
+    }))
+  } catch (error) {
+    console.error('[background] 获取 cookies 失败:', error)
+    throw error
+  }
+}
+
+/**
  * HTTP 请求消息类型
  */
 interface HttpRequestMessage {
@@ -20,6 +79,18 @@ interface HttpRequestMessage {
  * 监听来自其他页面的消息
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // 获取 Cookies（通过 background 脚本）
+  if (request.type === 'GET_COOKIES_BG') {
+    getCookies()
+      .then(cookies => {
+        sendResponse({ success: true, data: cookies })
+      })
+      .catch(error => {
+        sendResponse({ success: false, error: error.message })
+      })
+    return true
+  }
+
   // HTTP 请求代理
   if (request.type === 'HTTP_REQUEST') {
     const { method, url, body, headers } = request
