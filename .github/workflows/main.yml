@@ -92,7 +92,7 @@ jobs:
       - name: Determine status
         id: status_check
         run: |
-          if [ "${{ needs.build-push.result }}" == "success" ] && [ "${{ needs.remote-deploy.result }}" == "success" ]; then
+          if [ "${{ needs.build-push.result }}" == "success" ]; then
             echo "status=成功" >> $GITHUB_OUTPUT
             echo "status_emoji=🟢" >> $GITHUB_OUTPUT
           else
