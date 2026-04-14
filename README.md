@@ -2,6 +2,8 @@
 
 浏览器扩展，用于快速获取支持网站的 Cookie 和 Storage 数据。
 
+下载页: [数据获取扩展](https://download.upgrade.toolsetlink.com/download?appKey=Ay8X7S2hQy9DWUSD9Jvz9g)
+
 ## 功能特性
 
 - 🔐 快速获取支持网站的 Cookie 数据
@@ -248,6 +250,23 @@ const greeting = tHtml("greeting", ["用户"], "Hello!")
 - winter, dim, nord, sunset, caramellatte, abyss, silk
 
 ## 常见问题
+
+### 启动报错:
+pnpm dev 或pnpm build报错:
+```
+> plasmo dev
+
+🟣 Plasmo v0.90.5
+🔴 The Browser Extension Framework
+🔵 INFO   | Starting the extension development server...
+🔵 INFO   | Building for target: chrome-mv3
+🔵 INFO   | Loaded environment variables from: []
+(node:8292) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+🔴 ERROR  | Build failed. To debug, run plasmo dev --verbose.
+🔴 ERROR  | Could not resolve module "node:util" from "C:\\Users\\85365\\Downloads\\希音工具-1.0.0-win\\test\\node\_modules\\.pnpm\\jiti@2.6.1\_patch\_hash=d8e89\_ca4f76dff23b92a59be22c80bc306073\\node\_modules\\jiti\\dist\\jiti.cjs"
+```
+需要在 pnpm i之后运行 pnpm fix_jiti 命令. 下面两个问题也都是一样的, 都是 jiti 模块的问题.
 
 ### 安装 daisyui 没样式
 
