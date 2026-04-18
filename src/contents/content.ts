@@ -31,14 +31,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     try {
       // 通过 document.cookie 获取 cookie
       const cookieString = document.cookie
-      // const cookies = cookieString.split(';').filter(s => s.trim()).map(cookie => {
-      //   const [name, ...valueParts] = cookie.trim().split('=')
-      //   return {
-      //     name: name.trim(),
-      //     value: valueParts.join('=').trim(),
-      //     domain: window.location.hostname
-      //   }
-      // })
+      // 返回原始 cookie 字符串，保留所有字符
       sendResponse({ success: true, data: cookieString })
     } catch (error) {
       sendResponse({ success: false, error: error.message })

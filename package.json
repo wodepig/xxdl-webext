@@ -1,7 +1,7 @@
 {
   "name": "xxdl-webext",
   "displayName": "xxdl-webext",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "一个基于Plasmo的浏览器扩展，用于自动添加多账号",
    "author": "admin@xxdl.top",
   "contributors": [

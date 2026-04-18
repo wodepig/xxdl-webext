@@ -115,9 +115,16 @@
                 <p class="text-xs text-base-content/60">{{ project.name }}</p>
               </div>
             </div>
-            <span class="badge badge-sm" :class="currentProject?.id === project.id ? 'badge-success' : 'badge-primary'">
-              {{ currentProject?.id === project.id ? t('statusActive') : t('statusSupported') }}
-            </span>
+            <div class="flex items-center gap-2">
+              <span class="badge badge-sm" :class="currentProject?.id === project.id ? 'badge-success' : 'badge-primary'">
+                {{ currentProject?.id === project.id ? t('statusActive') : t('statusSupported') }}
+              </span>
+              <button @click="enterProject(project)" class="btn btn-ghost btn-xs btn-circle" :title="'进入 ' + project.name">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div
@@ -254,5 +261,16 @@ function enterAction() {
       projectLinkRef.value?.click()
     })
   }
+}
+
+/**
+ * 进入指定项目的操作页面
+ * @param project - 项目配置
+ */
+function enterProject(project: ProjectConfType) {
+  projectUrl.value = `/tabs/project.html?fileName=${project.fileName}`
+  nextTick(() => {
+    projectLinkRef.value?.click()
+  })
 }
 </script>
