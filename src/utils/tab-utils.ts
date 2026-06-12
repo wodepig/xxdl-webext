@@ -17,7 +17,7 @@ export const supportedSites: ProjectConf[] = [
     id: 2,
     name: '新道云',
     description: '处理新道云和分析云的账号自动添加',
-    matchUrl: ['seentao.com','analysis.com'],
+    matchUrl: ['seentao.com','main.sakura.devitem.top','api.sakura.devitem.top'],
     matchTitle: ['新道云','分析云'],
     backendKey: 'another',
     fileName: 'xindao'

@@ -10,7 +10,7 @@
         </button>
         <div>
           <h1 class="text-lg font-bold">{{ projectConfig?.name || '新道云' }}</h1>
-          <p class="text-xs text-base-content/60">{{ projectConfig?.matchUrl?.join(',') || 'xindaoyun.com' }}</p>
+          <p class="text-xs text-base-content/60">{{ projectConfig?.matchUrl?.join(',').substring(0, 20)+'......' || 'xindaoyun.com' }}</p>
         </div>
       </div>
       <HeaderActions />
@@ -256,7 +256,16 @@ const activeTab = ref('account')
 onMounted(async () => {
   // 加载并应用主题
   await loadAndApplyTheme()
-  await loadProjectConfig()
+  // 自动切换tab并获取数据
+  const tab = await loadProjectConfig()
+  if (tab.url?.includes('/runner_web/student/index')) {
+    activeTab.value = 'account'
+    getAccountData()
+  }
+    if (tab.url?.includes('/web/workbench/homepage')) {
+    activeTab.value = 'cookie'
+    getCookieData()
+  }
 })
 
 /**
@@ -274,7 +283,7 @@ async function loadProjectConfig() {
         if (matchProjectConf(tab, project)) {
           projectConfig.value = project
           console.log('[xindao] 匹配到项目配置:', project)
-          return
+          return tab
         }
       } catch {
         continue

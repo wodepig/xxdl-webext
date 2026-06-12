@@ -143,6 +143,10 @@
     "message": "功能说明",
     "description": "功能说明标签"
   },
+  "tabVersions": {
+    "message": "版本历史",
+    "description": "版本历史标签"
+  },
   "tabHelp": {
     "message": "使用帮助",
     "description": "使用帮助标签"

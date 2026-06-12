@@ -31,7 +31,10 @@ pnpm dev
 
 # 构建
 pnpm build
+
+# 安装
 ```
+浏览器扩展中选择加载解压缩的扩展, 选中build\chrome-mv3-dev目录, 即可安装扩展, 以灰色图标显示
 
 ## 项目结构
 
