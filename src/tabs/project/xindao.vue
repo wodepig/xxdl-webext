@@ -10,7 +10,8 @@
         </button>
         <div>
           <h1 class="text-lg font-bold">{{ projectConfig?.name || '新道云' }}</h1>
-          <p class="text-xs text-base-content/60">{{ projectConfig?.matchUrl?.join(',').substring(0, 20)+'......' || 'xindaoyun.com' }}</p>
+          <p class="text-xs text-base-content/60">{{ projectConfig?.matchUrl?.join(',').substring(0, 20) + '......' ||
+            'xindaoyun.com' }}</p>
         </div>
       </div>
       <HeaderActions />
@@ -63,6 +64,18 @@
                 <h3 class="font-bold text-sm">提取成功</h3>
                 <div class="text-xs">用户名: <span class="font-mono font-bold text-primary">{{ accountData.userName
                     }}</span></div>
+                <div class="text-xs flex items-center gap-1">Token:
+                  <span class="font-mono font-bold text-primary" :title="accountData.qsData.userToken">{{
+                    truncateToken(accountData.qsData.userToken) }}</span>
+                  <button @click="copyToken(accountData.qsData.userToken)"
+                    class="btn btn-ghost btn-xs btn-circle text-primary" title="复制 Token">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -233,10 +246,10 @@ import HeaderActions from "~/components/HeaderActions.vue"
 import Tabs from "~/components/Tabs.vue"
 
 import Toast from "~/components/Toast.vue"
-import { getCookies, getAllLocalStorage, getSessionStorage, getLocalStorage ,getCurrentTab} from '~/utils/common'
+import { getCookies, getAllLocalStorage, getSessionStorage, getLocalStorage, getCurrentTab } from '~/utils/common'
 import { Storage } from "@plasmohq/storage"
 import { httpClient } from "~/utils/http-client"
-import { supportedSites, matchProjectConf} from "~/utils/tab-utils"
+import { supportedSites, matchProjectConf } from "~/utils/tab-utils"
 import type { ProjectConf } from '~/types/project'
 import { loadAndApplyTheme } from "~/composables/useTheme"
 
@@ -262,7 +275,7 @@ onMounted(async () => {
     activeTab.value = 'account'
     getAccountData()
   }
-    if (tab.url?.includes('/web/workbench/homepage')) {
+  if (tab.url?.includes('/web/workbench/homepage')) {
     activeTab.value = 'cookie'
     getCookieData()
   }
@@ -327,6 +340,27 @@ function goBack() {
 }
 
 /**
+ * 截取 Token 显示：前 8 位 + ... + 后 4 位
+ */
+function truncateToken(token: string): string {
+  if (!token) return ''
+  if (token.length <= 16) return token
+  return `${token.slice(0, 8)}...${token.slice(-4)}`
+}
+
+/**
+ * 复制 Token 到剪贴板
+ */
+async function copyToken(token: string) {
+  try {
+    await navigator.clipboard.writeText(token)
+    toastRef.value?.show({ message: 'Token 已复制', type: 'success' })
+  } catch (error) {
+    toastRef.value?.show({ message: '复制失败: ' + error.message, type: 'error' })
+  }
+}
+
+/**
  * 获取账号数据（模拟）
  */
 async function getAccountData() {
@@ -345,32 +379,32 @@ async function getAccountData() {
 }
 
 // 获取添加账号的请求体
-async function getAccountBody(){
-const qsStr = await getLocalStorage('qs')
-    if (!qsStr) {
-      throw new Error("qs数据不存在, 尝试设置中清空内容重登");
-    }
-   
-    const qsData =JSON.parse(qsStr)
-     console.log('qsData', qsData);
-    // const classData = data.qs
+async function getAccountBody() {
+  const qsStr = await getLocalStorage('qs')
+  if (!qsStr) {
+    throw new Error("qs数据不存在, 尝试设置中清空内容重登");
+  }
 
-    const classDataStr = await getSessionStorage('classData')
-    if(!classDataStr){
-      throw new Error("classData数据不存在");
-    }
-    const tab = await getCurrentTab()
-    const url = new URL(tab.url)
-    
-    accountData.value = {
-      accessKey:await storage.get('apiKey') || '',
-      userName: qsData.userName,
-      courseName: qsData.courseName,
-      qsData: qsData,
-      classData: JSON.parse(classDataStr),
-      baseUrl: url.origin + '/'
-    }
-    console.log('请求数据:', accountData.value);
+  const qsData = JSON.parse(qsStr)
+  console.log('qsData', qsData);
+  // const classData = data.qs
+
+  const classDataStr = await getSessionStorage('classData')
+  if (!classDataStr) {
+    throw new Error("classData数据不存在");
+  }
+  const tab = await getCurrentTab()
+  const url = new URL(tab.url)
+
+  accountData.value = {
+    accessKey: await storage.get('apiKey') || '',
+    userName: qsData.userName,
+    courseName: qsData.courseName,
+    qsData: qsData,
+    classData: JSON.parse(classDataStr),
+    baseUrl: url.origin + '/'
+  }
+  console.log('请求数据:', accountData.value);
 
 }
 
@@ -382,16 +416,16 @@ async function getCookieData() {
   gettingCookie.value = true
 
   const ckData = await getCookies()
-  if(!ckData){
+  if (!ckData) {
     throw new Error("Cookie 数据不存在");
   }
   console.log('ckData', ckData);
-   // 将 cookie 数组格式化为 key=value;key=value 格式
-  const ck =  ckData.map(cookie => `${cookie.name}=${cookie.value}`).join(';')
+  // 将 cookie 数组格式化为 key=value;key=value 格式
+  const ck = ckData.map(cookie => `${cookie.name}=${cookie.value}`).join(';')
   // 模拟延迟
   await new Promise(resolve => setTimeout(resolve, 1000))
   const tab = await getCurrentTab()
-  if(!tab.url){
+  if (!tab.url) {
     throw new Error("标签页 URL 为空");
   }
   // 模拟 Cookie 数据
@@ -501,15 +535,15 @@ async function sendToBackend() {
 
   try {
     // 这里应该调用实际的 API
-    const result = await httpClient.post<{ code: number; msg: string; data: string | null }>(`${backendUrl}${uri}`, 
+    const result = await httpClient.post<{ code: number; msg: string; data: string | null }>(`${backendUrl}${uri}`,
       dataToSend
     )
     // 校验响应数据
     if (result.data.code === 200) {
-    toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送成功`, type: 'success' })
+      toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送成功`, type: 'success' })
 
     } else {
-    toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送失败:${result.data.msg}` , type: 'error' })
+      toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送失败:${result.data.msg}`, type: 'error' })
 
     }
     // 模拟成功
