@@ -41,7 +41,7 @@ jobs:
           # 写入环境变量
           echo "cleaned_message=$cleaned" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@10
 
       - name: Install dependencies (with fixes)
         run: pnpm install

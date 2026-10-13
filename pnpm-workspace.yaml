@@ -1,2 +1,12 @@
 patchedDependencies:
   jiti: patches/jiti.patch
+
+# pnpm 10 默认阻止依赖运行构建脚本，以下原生模块是 Plasmo 构建链必需的，需显式放行
+# 缺少 esbuild / @parcel/watcher / lmdb / @swc/core 的构建会直接导致 pnpm install 报 ERR_PNPM_IGNORED_BUILDS
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - esbuild
+  - lmdb
+  - msgpackr-extract
+  - sharp
