@@ -33,7 +33,7 @@ import { ref, onMounted, shallowRef } from "vue"
 import type { Component } from "vue"
 // 静态导入所有项目组件
 import Base from "./project/Base.vue"
-import Xindao from "./project/xindao.vue"
+import Xindao from "./project/xindao/index.vue"
 import Example from "./project/example.vue"
 import Shein from "./project/shein.vue"
 import Bilibili from "./project/bilibili.vue"

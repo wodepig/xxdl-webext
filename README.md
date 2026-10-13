@@ -55,7 +55,14 @@ src/
 │   ├── About.vue       # 关于页面
 │   └── project/        # 项目操作页面
 │       ├── Base.vue    # 基础模板
-│       ├── xindao.vue  # 新道云适配
+│       ├── xindao/     # 新道云适配（按 Tab 拆分组件）
+│       │   ├── index.vue       # 主容器：头部 + Tab 容器 + 发送到后端
+│       │   ├── AccountTab.vue  # 添加账号
+│       │   ├── LoginTab.vue    # 自动登录
+│       │   ├── CookieTab.vue   # 分析云
+│       │   ├── GuideTab.vue    # 使用说明
+│       │   ├── SettingsTab.vue # 设置
+│       │   └── toast.ts        # 子 Tab 的 Toast 注入约定
 │       ├── bilibili.vue # B站适配
 │       ├── shein.vue   # Shein适配
 │       └── example.vue # 示例模板
