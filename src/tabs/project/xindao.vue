@@ -94,6 +94,139 @@
         </div>
       </template>
 
+      <!-- 自动登录 Tab -->
+      <template #login>
+        <div class="bg-base-100 border border-base-300 p-4 rounded-box">
+          <div class="flex items-start gap-3 p-3 rounded-lg bg-warning/5 border border-warning/20 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-xl">🔑</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-sm font-semibold mb-1">自动登录</h3>
+              <p class="text-xs text-base-content/60">打开网址并自动填充账号密码</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <!-- 目标地址：主机 + 路径 -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">主机</span>
+                </label>
+                <input v-model="loginForm.host" type="text" placeholder="https://edu.seentao.com"
+                  class="input input-bordered input-sm w-full" />
+              </div>
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">路径</span>
+                </label>
+                <input v-model="loginForm.path" type="text" placeholder="/runner_web/login"
+                  class="input input-bordered input-sm w-full" />
+              </div>
+            </div>
+
+            <!-- 元素 id -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">用户名元素 id</span>
+                </label>
+                <input v-model="loginForm.usernameId" type="text" placeholder="username"
+                  class="input input-bordered input-sm w-full" />
+              </div>
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">密码元素 id</span>
+                </label>
+                <input v-model="loginForm.passwordId" type="text" placeholder="password"
+                  class="input input-bordered input-sm w-full" />
+              </div>
+            </div>
+            <p class="text-xs text-base-content/50 -mt-1">
+              留空则自动查找页面中的用户名/密码输入框，也可填 #id 或 CSS 选择器
+            </p>
+
+            <!-- 账号 -->
+            <div class="form-control">
+              <label class="label py-1">
+                <span class="label-text text-xs">账号</span>
+              </label>
+              <input v-model="loginForm.username" type="text" placeholder="请输入账号"
+                class="input input-bordered input-sm w-full" />
+            </div>
+
+            <!-- 密码 -->
+            <div class="form-control">
+              <label class="label py-1">
+                <span class="label-text text-xs">密码</span>
+              </label>
+              <div class="relative">
+                <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'" placeholder="请输入密码"
+                  class="input input-bordered input-sm w-full pr-10" />
+                <button type="button" @click="showLoginPassword = !showLoginPassword"
+                  class="absolute right-1 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle" title="显示/隐藏密码">
+                  <svg v-if="!showLoginPassword" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- 无痕 -->
+            <label class="label cursor-pointer justify-start gap-2 py-1">
+              <input v-model="loginForm.incognito" type="checkbox" class="checkbox checkbox-sm checkbox-primary" />
+              <span class="label-text text-xs">使用无痕窗口打开</span>
+            </label>
+            <p v-if="loginForm.incognito" class="text-xs text-base-content/50 -mt-1">
+              需先在扩展详情页开启「在无痕模式下启用」，否则无法创建无痕窗口
+            </p>
+
+            <!-- 确定 -->
+            <button @click="autoLogin" :disabled="logging" class="btn btn-primary btn-sm w-full">
+              <svg v-if="!logging" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 13l4 4L19 7" />
+              </svg>
+              <span v-if="logging" class="loading loading-spinner loading-xs"></span>
+              {{ logging ? '执行中...' : '确定' }}
+            </button>
+
+            <!-- 执行日志：固定单行，超出横向滚动并自动滚到最新 -->
+            <div v-if="loginStatus" ref="loginLogRef"
+              class="rounded-box border px-3 py-2 text-xs whitespace-nowrap overflow-x-auto"
+              :class="loginStatusType === 'error' ? 'border-error/40 text-error' : loginStatusType === 'success' ? 'border-success/40 text-success' : 'border-info/40 text-info'">
+              {{ loginStatus }}
+            </div>
+
+            <!-- 目标页面在后台打开，需要时手动切换过去 -->
+            <template v-if="lastLoginTabId !== null">
+              <button @click="focusLoginTab" class="btn btn-outline btn-sm w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                切换到目标页面
+              </button>
+              <p class="text-xs text-base-content/50">
+                目标页面在后台打开，不会中断当前窗口；点击上方按钮可切换过去
+              </p>
+            </template>
+          </div>
+        </div>
+      </template>
+
       <!-- 分析云 Tab -->
       <template #cookie>
         <div class="bg-base-100 border border-base-300 p-4 rounded-box">
@@ -240,7 +373,7 @@
 
 <script setup lang="ts">
 import "~/style.css"
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, reactive, onMounted, nextTick } from "vue"
 import { t } from "~/utils/i18n"
 import HeaderActions from "~/components/HeaderActions.vue"
 import Tabs from "~/components/Tabs.vue"
@@ -271,11 +404,21 @@ onMounted(async () => {
   await loadAndApplyTheme()
   // 自动切换tab并获取数据
   const tab = await loadProjectConfig()
-  if (tab.url?.includes('/runner_web/student/index')) {
+  // 预填自动登录的目标地址（拆分为主机 + 路径）
+  if (tab?.url) {
+    try {
+      const current = new URL(tab.url)
+      loginForm.host = current.origin
+      loginForm.path = current.pathname + current.search + current.hash
+    } catch {
+      loginForm.host = tab.url
+    }
+  }
+  if (tab?.url?.includes('/runner_web/student/index')) {
     activeTab.value = 'account'
     getAccountData()
   }
-  if (tab.url?.includes('/web/workbench/homepage')) {
+  if (tab?.url?.includes('/web/workbench/homepage')) {
     activeTab.value = 'cookie'
     getCookieData()
   }
@@ -310,6 +453,7 @@ async function loadProjectConfig() {
 // Tab 配置
 const tabs = computed(() => [
   { key: 'account', label: '➕ 添加账号' },
+  { key: 'login', label: '🔑 自动登录' },
   { key: 'cookie', label: '☁️ 分析云' },
   { key: 'guide', label: '📖 说明' },
   { key: 'settings', label: '⚙️ 设置' }
@@ -322,6 +466,39 @@ const sending = ref(false)
 const clearingStorage = ref(false)
 const clearingCookies = ref(false)
 const clearingSession = ref(false)
+
+// ==================== 自动登录 ====================
+/** 自动登录表单 */
+const loginForm = reactive({
+  /** 目标主机（含协议，如 https://edu.seentao.com） */
+  host: 'https://edu.seentao.com',
+  /** 目标路径（如 /runner_web/login） */
+  path: '/runner_web/login',
+  /** 账号 */
+  username: '123456',
+  /** 密码 */
+  password: '123456',
+  /** 用户名输入框元素 id（支持 #id 或 CSS 选择器，留空则自动查找） */
+  usernameId: '#userName',
+  /** 密码输入框元素 id（支持 #id 或 CSS 选择器，留空则自动查找） */
+  passwordId: '#password',
+  /** 是否使用无痕窗口打开 */
+  incognito: false
+})
+/** 是否正在执行自动登录 */
+const logging = ref(false)
+/** 是否明文显示密码 */
+const showLoginPassword = ref(false)
+/** 执行结果提示（界面单行日志） */
+const loginStatus = ref('')
+/** 执行结果类型：success | error | info */
+const loginStatusType = ref<'success' | 'error' | 'info'>('info')
+/** 单行日志 DOM 引用（内容超出时自动滚动到最新） */
+const loginLogRef = ref<HTMLElement | null>(null)
+/** 最近一次自动登录打开的目标标签页 ID */
+const lastLoginTabId = ref<number | null>(null)
+/** 最近一次自动登录打开的目标窗口 ID（无痕窗口） */
+const lastLoginWindowId = ref<number | null>(null)
 
 // 数据
 const accountData = ref<any>(null)
@@ -510,6 +687,434 @@ async function clearSessionStorage() {
   }
 }
 
+// ==================== 自动登录实现 ====================
+
+/** 注入脚本入参 */
+interface FillLoginPayload {
+  usernameId: string
+  passwordId: string
+  username: string
+  password: string
+}
+
+/** 注入脚本执行结果 */
+interface FillLoginResult {
+  userFound: boolean
+  pwdFound: boolean
+}
+
+/** 打开页面后的目标信息 */
+interface LoginTarget {
+  /** 标签页 ID */
+  tabId: number
+  /** 窗口 ID（无痕窗口时用于重新聚焦） */
+  windowId?: number
+}
+
+/**
+ * 更新界面单行日志：同时打印到扩展控制台，并在内容超出时自动滚动到最新
+ * @param message - 日志内容
+ * @param type - 日志类型，决定颜色
+ */
+function setLoginStatus(message: string, type: 'success' | 'error' | 'info' = 'info') {
+  loginStatus.value = message
+  loginStatusType.value = type
+  console.log('[自动登录]', message)
+  nextTick(() => {
+    const el = loginLogRef.value
+    if (el) {
+      el.scrollLeft = el.scrollWidth
+    }
+  })
+}
+
+/**
+ * 延时等待
+ * @param ms - 毫秒
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * 拼接主机与路径，主机缺少协议时补全 https://
+ * @param host - 主机（可含协议与端口）
+ * @param path - 路径（可不带前导 /）
+ * @returns 规范化后的完整网址
+ */
+function buildTargetUrl(host: string, path: string): string {
+  let base = (host || '').trim()
+  if (!base) {
+    throw new Error('请输入主机地址')
+  }
+  if (!/^https?:\/\//i.test(base)) {
+    base = 'https://' + base
+  }
+
+  let suffix = (path || '').trim()
+  if (suffix && !suffix.startsWith('/')) {
+    suffix = '/' + suffix
+  }
+
+  const url = base.replace(/\/+$/, '') + suffix
+  try {
+    new URL(url)
+  } catch {
+    throw new Error('网址格式不正确')
+  }
+  return url
+}
+
+/**
+ * 打开目标网址
+ * 注意：始终以「后台」方式打开，不抢占焦点
+ * 扩展操作页可能运行在 action popup 中，一旦焦点被抢走，弹窗会立即被浏览器销毁
+ * @param url - 目标网址
+ * @param incognito - 是否使用无痕窗口
+ * @returns 新标签页 ID 与所属窗口 ID
+ */
+async function openLoginTab(url: string, incognito: boolean): Promise<LoginTarget> {
+  // 普通标签页
+  if (!incognito) {
+    console.log('[自动登录] 后台打开标签页:', url)
+    const tab = await chrome.tabs.create({ url, active: false })
+    if (!tab.id) {
+      throw new Error('创建标签页失败')
+    }
+    console.log('[自动登录] 标签页已创建: tabId =', tab.id, ', windowId =', tab.windowId)
+    return { tabId: tab.id, windowId: tab.windowId }
+  }
+
+  // 无痕窗口
+  return openIncognitoTab(url)
+}
+
+/**
+ * 在无痕窗口中打开目标网址
+ * 注意：MV3 下 chrome.windows.create 的返回值可能为 null，不能依赖它
+ * 因此这里用「窗口列表差集」定位新建的无痕窗口
+ * @param url - 目标网址
+ * @returns 新标签页 ID 与无痕窗口 ID
+ */
+async function openIncognitoTab(url: string): Promise<LoginTarget> {
+  // 先确认扩展是否被允许在无痕模式下运行，避免创建失败后无从判断原因
+  let allowed = true
+  try {
+    allowed = await chrome.extension.isAllowedIncognitoAccess()
+  } catch (error) {
+    console.warn('[自动登录] 无法检测无痕权限:', error)
+  }
+  console.log('[自动登录] 扩展无痕权限:', allowed)
+  if (!allowed) {
+    throw new Error('扩展未开启「在无痕模式下启用」，请在扩展详情页开启后重试')
+  }
+
+  // 记录创建前的无痕窗口，便于稍后定位新窗口
+  const before = await chrome.windows.getAll({ populate: false })
+  const beforeIds = before.filter(w => w.incognito && w.id !== undefined).map(w => w.id as number)
+
+  console.log('[自动登录] 后台打开无痕窗口:', url)
+  try {
+    const created = await chrome.windows.create({ url, incognito: true, focused: false })
+    const createdTabId = created?.tabs?.[0]?.id
+    if (created?.id !== undefined && createdTabId) {
+      console.log('[自动登录] 无痕窗口已创建(直接返回): tabId =', createdTabId, ', windowId =', created.id)
+      return { tabId: createdTabId, windowId: created.id }
+    }
+    // 返回值为 null 或窗口内标签页尚未就绪，转入轮询
+    console.warn('[自动登录] windows.create 未返回可用窗口:', created)
+  } catch (error) {
+    console.error('[自动登录] 无痕窗口创建失败:', error)
+    throw new Error(`无痕窗口打开失败：${(error as Error).message}`)
+  }
+
+  // 轮询窗口列表，找到新建的无痕窗口及其标签页
+  for (let i = 0; i < 25; i++) {
+    const wins = await chrome.windows.getAll({ populate: true })
+    const target = wins.find(w => w.incognito && w.id !== undefined && !beforeIds.includes(w.id))
+    const tabId = target?.tabs?.[0]?.id
+    if (target?.id !== undefined && tabId) {
+      console.log('[自动登录] 无痕窗口已创建(轮询): tabId =', tabId, ', windowId =', target.id)
+      return { tabId, windowId: target.id }
+    }
+    await sleep(200)
+  }
+
+  throw new Error('未能获取无痕窗口的标签页，请确认已在扩展详情页开启「在无痕模式下启用」')
+}
+
+/**
+ * 等待标签页加载完成
+ * @param tabId - 标签页 ID
+ * @param timeout - 超时时间（毫秒）
+ */
+function waitTabComplete(tabId: number, timeout = 45000): Promise<void> {
+  const startAt = Date.now()
+  console.log('[自动登录] 等待页面加载完成: tabId =', tabId, ', 超时 =', timeout, 'ms')
+
+  return new Promise((resolve, reject) => {
+    let settled = false
+    let timer: ReturnType<typeof setTimeout>
+
+    /**
+     * 结束等待（只生效一次）
+     * @param error - 有值时视为失败
+     */
+    const finish = (error?: Error) => {
+      if (settled) return
+      settled = true
+      chrome.tabs.onUpdated.removeListener(listener)
+      clearTimeout(timer)
+      if (error) {
+        console.warn('[自动登录] 等待页面加载结束(失败):', error.message, ', 耗时', Date.now() - startAt, 'ms')
+        reject(error)
+      } else {
+        console.log('[自动登录] 页面加载完成, 耗时', Date.now() - startAt, 'ms')
+        resolve()
+      }
+    }
+
+    const listener = (id: number, info: chrome.tabs.TabChangeInfo) => {
+      if (id !== tabId) return
+      console.log('[自动登录] tab 状态更新: status =', info.status)
+      if (info.status === 'complete') {
+        finish()
+      }
+    }
+
+    timer = setTimeout(() => finish(new Error('页面加载超时')), timeout)
+    chrome.tabs.onUpdated.addListener(listener)
+
+    // 监听器注册前可能已加载完成，主动查询一次
+    chrome.tabs.get(tabId)
+      .then(tab => {
+        console.log('[自动登录] 当前标签页状态:', tab.status)
+        if (tab.status === 'complete') finish()
+      })
+      .catch(() => finish(new Error('标签页已关闭')))
+  })
+}
+
+/**
+ * 在目标页面查找并填充用户名/密码输入框
+ * 注意：该函数会被序列化后注入目标页面执行，不能引用外部作用域的变量
+ * @param payload - 元素 id 与待填充的账号密码
+ * @returns 是否找到用户名/密码输入框
+ */
+function injectFillLogin(payload: FillLoginPayload): FillLoginResult {
+  /** 按元素 id（支持 #id 写法）或 CSS 选择器定位输入框 */
+  const findInput = (raw: string): HTMLInputElement | null => {
+    const value = (raw || '').trim()
+    if (!value) return null
+
+    const byId = document.getElementById(value.replace(/^#/, ''))
+    if (byId instanceof HTMLInputElement) return byId
+
+    try {
+      const bySelector = document.querySelector(value)
+      if (bySelector instanceof HTMLInputElement) return bySelector
+    } catch {
+      // 非法选择器，忽略
+    }
+    return null
+  }
+
+  /** 未指定 id 时自动查找第一个可用的文本输入框 */
+  const findUserInput = (): HTMLInputElement | null => {
+    const inputs = document.querySelectorAll('input')
+    for (let i = 0; i < inputs.length; i++) {
+      const el = inputs[i]
+      const type = (el.type || 'text').toLowerCase()
+      if (el.disabled || el.readOnly) continue
+      if (type === 'text' || type === 'email' || type === 'tel' || type === 'number') return el
+    }
+    return null
+  }
+
+  /** 未指定 id 时自动查找密码输入框 */
+  const findPasswordInput = (): HTMLInputElement | null => {
+    const el = document.querySelector('input[type="password"]')
+    return el instanceof HTMLInputElement ? el : null
+  }
+
+  /** 赋值并触发事件，兼容 Vue/React 等受控组件 */
+  const setValue = (el: HTMLInputElement, value: string) => {
+    if (el.value === value) return
+    try {
+      el.focus()
+    } catch {
+      // 忽略聚焦失败
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value')
+    if (descriptor && typeof descriptor.set === 'function') {
+      descriptor.set.call(el, value)
+    } else {
+      el.value = value
+    }
+    el.dispatchEvent(new Event('input', { bubbles: true }))
+    el.dispatchEvent(new Event('change', { bubbles: true }))
+    el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }))
+  }
+
+  const userInput = findInput(payload.usernameId) || (payload.usernameId.trim() ? null : findUserInput())
+  const passwordInput = findInput(payload.passwordId) || (payload.passwordId.trim() ? null : findPasswordInput())
+
+  if (userInput && payload.username) setValue(userInput, payload.username)
+  if (passwordInput && payload.password) setValue(passwordInput, payload.password)
+
+  return { userFound: !!userInput, pwdFound: !!passwordInput }
+}
+
+/**
+ * 轮询注入脚本，等待输入框渲染完成后填充
+ * @param tabId - 目标标签页 ID
+ * @param maxAttempts - 最大重试次数
+ * @returns 最后一次注入的执行结果
+ */
+async function fillLoginInputs(tabId: number, maxAttempts = 10): Promise<FillLoginResult> {
+  const payload: FillLoginPayload = {
+    usernameId: loginForm.usernameId.trim(),
+    passwordId: loginForm.passwordId.trim(),
+    username: loginForm.username,
+    password: loginForm.password
+  }
+
+  console.log('[自动登录] 开始填充, 参数:', {
+    tabId,
+    maxAttempts,
+    usernameId: payload.usernameId || '(自动查找)',
+    passwordId: payload.passwordId || '(自动查找)',
+    username: payload.username,
+    password: payload.password ? `已填写(长度 ${payload.password.length})` : '未填写'
+  })
+
+  let result: FillLoginResult = { userFound: false, pwdFound: false }
+  let lastInjectError = ''
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let current: FillLoginResult | undefined
+    try {
+      const injections = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: injectFillLogin,
+        args: [payload]
+      })
+      current = injections[0]?.result as FillLoginResult | undefined
+      lastInjectError = ''
+    } catch (error) {
+      // 页面仍在加载、脚本上下文未就绪时会注入失败，记录下来继续重试
+      lastInjectError = (error as Error).message
+      const alive = await chrome.tabs.get(tabId).then(() => true).catch(() => false)
+      console.warn('[自动登录] 第', attempt, '/', maxAttempts, '次注入失败:', lastInjectError, ', 标签页存在 =', alive)
+      if (!alive) {
+        throw new Error('目标标签页已关闭')
+      }
+      if (attempt < maxAttempts) {
+        setLoginStatus(`查找输入框失败，重试 ${attempt}/${maxAttempts}`)
+        await sleep(500)
+      }
+      continue
+    }
+
+    if (current) {
+      result = current
+      console.log('[自动登录] 第', attempt, '/', maxAttempts, '次注入结果: userFound =', current.userFound, ', pwdFound =', current.pwdFound)
+      const usernameReady = !payload.username || current.userFound
+      const passwordReady = !payload.password || current.pwdFound
+      if (usernameReady && passwordReady) {
+        console.log('[自动登录] 填充完成, 共尝试', attempt, '次')
+        return result
+      }
+      if (attempt < maxAttempts) {
+        setLoginStatus(`未找到输入框，重试 ${attempt}/${maxAttempts}`)
+      }
+    }
+    await sleep(500)
+  }
+
+  console.warn('[自动登录] 重试次数用尽:', { maxAttempts, result, lastInjectError })
+  if (lastInjectError && !result.userFound && !result.pwdFound) {
+    throw new Error(`注入脚本失败：${lastInjectError}`)
+  }
+  return result
+}
+
+/**
+ * 自动登录：打开网址并填充账号密码
+ */
+async function autoLogin() {
+  if (logging.value) return
+
+  loginStatus.value = ''
+  console.log('[自动登录] ===== 开始执行 =====')
+  console.log('[自动登录] 表单参数:', {
+    host: loginForm.host,
+    path: loginForm.path,
+    usernameId: loginForm.usernameId || '(自动查找)',
+    passwordId: loginForm.passwordId || '(自动查找)',
+    username: loginForm.username,
+    password: loginForm.password ? `已填写(长度 ${loginForm.password.length})` : '未填写',
+    incognito: loginForm.incognito
+  })
+
+  try {
+    const url = buildTargetUrl(loginForm.host, loginForm.path)
+    console.log('[自动登录] 组装后的完整网址:', url)
+
+    if (!loginForm.username && !loginForm.password) {
+      throw new Error('请输入账号或密码')
+    }
+
+    logging.value = true
+    setLoginStatus('正在打开页面...')
+
+    const target = await openLoginTab(url, loginForm.incognito)
+    lastLoginTabId.value = target.tabId
+    lastLoginWindowId.value = target.windowId ?? null
+
+    await waitTabComplete(target.tabId)
+
+    setLoginStatus('正在填充账号密码...')
+    const result = await fillLoginInputs(target.tabId)
+
+    const filled: string[] = []
+    if (result.userFound && loginForm.username) filled.push('账号')
+    if (result.pwdFound && loginForm.password) filled.push('密码')
+
+    if (!filled.length) {
+      throw new Error('未找到用户名/密码输入框，请检查元素 id 或页面结构')
+    }
+
+    setLoginStatus(`已自动输入${filled.join('、')}，可在目标页面点击登录`, 'success')
+    console.log('[自动登录] ===== 执行成功 ===== 已输入:', filled.join('、'))
+    toastRef.value?.show({ message: `已自动输入${filled.join('、')}`, type: 'success', duration: 5000 })
+  } catch (error) {
+    setLoginStatus((error as Error).message || '自动登录失败', 'error')
+    console.error('[自动登录] ===== 执行失败 =====', error)
+    toastRef.value?.show({ message: loginStatus.value, type: 'error', duration: 5000 })
+  } finally {
+    logging.value = false
+  }
+}
+
+/**
+ * 切换到目标标签页（用户主动点击，切换后当前弹窗会被浏览器关闭）
+ */
+async function focusLoginTab() {
+  if (lastLoginTabId.value === null) return
+
+  console.log('[自动登录] 切换到目标标签页: tabId =', lastLoginTabId.value, ', windowId =', lastLoginWindowId.value)
+  try {
+    if (loginForm.incognito && lastLoginWindowId.value !== null) {
+      await chrome.windows.update(lastLoginWindowId.value, { focused: true })
+    }
+    await chrome.tabs.update(lastLoginTabId.value, { active: true })
+  } catch (error) {
+    console.error('[自动登录] 切换标签页失败:', error)
+    toastRef.value?.show({ message: '切换标签页失败: ' + (error as Error).message, type: 'error' })
+  }
+}
+
 /**
  * 发送到后端
  */
@@ -523,14 +1128,21 @@ async function sendToBackend() {
     return
   }
 
+  // 只有账号/分析云 Tab 才有可发送的数据
+  const isAccount = activeTab.value === 'account'
+  if (!isAccount && activeTab.value !== 'cookie') {
+    toastRef.value?.show({ message: '当前页面没有可发送的数据', type: 'warning' })
+    return
+  }
+
   // 准备发送的数据
-  const dataToSend = activeTab.value === 'account' ? accountData.value : cookieData.value
+  const dataToSend = isAccount ? accountData.value : cookieData.value
   if (!dataToSend) {
     toastRef.value?.show({ message: '请先获取数据', type: 'warning' })
     return
   }
 
-  const uri = activeTab.value === 'account' ? '/api/plu/adduser' : '/api/plu/addFenxiYun'
+  const uri = isAccount ? '/api/plu/adduser' : '/api/plu/addFenxiYun'
   sending.value = true
 
   try {
@@ -540,16 +1152,16 @@ async function sendToBackend() {
     )
     // 校验响应数据
     if (result.data.code === 200) {
-      toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送成功`, type: 'success' })
+      toastRef.value?.show({ message: `${isAccount ? '账号' : '分析云'}数据发送成功`, type: 'success' })
 
     } else {
-      toastRef.value?.show({ message: `${activeTab.value === 'account' ? '账号' : '分析云'}数据发送失败:${result.data.msg}`, type: 'error' })
+      toastRef.value?.show({ message: `${isAccount ? '账号' : '分析云'}数据发送失败:${result.data.msg}`, type: 'error' })
 
     }
     // 模拟成功
 
     // 清空数据
-    if (activeTab.value === 'account') {
+    if (isAccount) {
       accountData.value = null
     } else {
       cookieData.value = null

@@ -34,6 +34,7 @@
   },
   "manifest": {
     "default_locale": "zh_CN",
+    "incognito": "spanning",
     "permissions": [
       "action",
       "tabs",
