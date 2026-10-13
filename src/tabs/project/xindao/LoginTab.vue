@@ -16,6 +16,14 @@
         <div class="form-control">
           <label class="label py-1">
             <span class="label-text text-xs">主机</span>
+            <span class="label-text-alt flex items-center gap-1">
+              <button type="button" class="btn btn-xs px-2" title="使用 http 协议"
+                :class="hostProtocol === 'http' ? 'btn-primary' : 'btn-ghost'"
+                @click="switchProtocol('http')">http</button>
+              <button type="button" class="btn btn-xs px-2" title="使用 https 协议"
+                :class="hostProtocol === 'https' ? 'btn-primary' : 'btn-ghost'"
+                @click="switchProtocol('https')">https</button>
+            </span>
           </label>
           <input v-model="loginForm.host" type="text" placeholder="https://edu.seentao.com"
             class="input input-bordered input-sm w-full" />
@@ -125,11 +133,35 @@
         </p>
       </template>
     </div>
+
+    <!-- 前端调用方式 -->
+    <div class="collapse collapse-arrow bg-base-200 mt-3">
+      <input type="checkbox" />
+      <div class="collapse-title text-sm font-medium">前端调用方式</div>
+      <div class="collapse-content space-y-2">
+        <p class="text-xs text-base-content/70">
+          在白名单域名（见 <code class="font-mono">utils/auto-login.ts</code>）的页面中执行：
+        </p>
+        <pre class="bg-base-300 p-3 rounded text-xs overflow-x-auto">{{ callExample }}</pre>
+        <p class="text-xs text-base-content/70">参数说明：</p>
+        <ul class="text-xs text-base-content/70 space-y-1">
+          <li><code class="font-mono text-primary">host</code>：目标主机，<span class="text-warning">必须带 http:// 或 https://</span>；<code class="font-mono text-primary">path</code>：目标路径</li>
+          <li><code class="font-mono text-primary">username</code> / <code class="font-mono text-primary">password</code>：账号与密码</li>
+          <li><code class="font-mono text-primary">usernameId</code> / <code class="font-mono text-primary">passwordId</code>：输入框元素 id，留空自动查找</li>
+          <li><code class="font-mono text-primary">incognito</code>：是否用无痕窗口打开，默认 false</li>
+          <li><code class="font-mono text-primary">autoConfirm</code>：是否自动点击确定，默认 false（只回填参数）</li>
+        </ul>
+        <p class="text-xs text-base-content/70">
+          可选：监听 <code class="font-mono text-primary">XXDL_SEENTAO_AUTO_LOGIN_RESULT</code> 获取执行结果（success / message）。
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, nextTick } from "vue"
+import { ref, reactive, computed, nextTick, onMounted, onUnmounted } from "vue"
+import { PENDING_AUTO_LOGIN_KEY, type AutoLoginParams } from "~/utils/auto-login"
 
 /**
  * 自动登录 Tab
@@ -176,6 +208,21 @@ const loginForm = reactive({
   incognito: false
 })
 
+/** 前端调用示例（展示在折叠面板中） */
+const callExample = `window.postMessage({
+  type: 'XXDL_SEENTAO_AUTO_LOGIN',
+  payload: {
+    host: 'https://edu.seentao.com',
+    path: '/runner_web/login',
+    username: 'zhangsan',
+    password: '123456',
+    usernameId: '#userName',
+    passwordId: '#password',
+    incognito: false,
+    autoConfirm: true
+  }
+}, '*')`
+
 /** 是否正在执行自动登录 */
 const logging = ref(false)
 /** 是否明文显示密码 */
@@ -190,6 +237,85 @@ const loginLogRef = ref<HTMLElement | null>(null)
 const lastLoginTabId = ref<number | null>(null)
 /** 最近一次自动登录打开的目标窗口 ID（无痕窗口） */
 const lastLoginWindowId = ref<number | null>(null)
+
+/** 是否由网页调用触发（决定是否把结果回传网页） */
+const invokedFromWeb = ref(false)
+
+// 挂载后读取网页传入的参数，并监听 background 的通知
+onMounted(() => {
+  chrome.runtime.onMessage.addListener(handleRuntimeMessage)
+  consumePendingAutoLogin()
+})
+
+onUnmounted(() => {
+  chrome.runtime.onMessage.removeListener(handleRuntimeMessage)
+})
+
+/**
+ * 监听扩展内部消息（background 通知读取参数）
+ * @param request - 消息体
+ */
+function handleRuntimeMessage(request: any) {
+  if (request?.type === 'AUTO_LOGIN_PARAMS') {
+    console.log('[自动登录] 收到 background 通知，重新读取参数')
+    consumePendingAutoLogin()
+  }
+}
+
+/**
+ * 读取并消费 background 暂存的自动登录参数
+ */
+async function consumePendingAutoLogin() {
+  const stored = await chrome.storage.local.get(PENDING_AUTO_LOGIN_KEY)
+  const params = stored[PENDING_AUTO_LOGIN_KEY] as AutoLoginParams | undefined
+  if (!params) return
+
+  // 立即清除，避免刷新页面时重复执行
+  await chrome.storage.local.remove(PENDING_AUTO_LOGIN_KEY)
+  await applyAutoLoginParams(params)
+}
+
+/**
+ * 用网页传入的参数回填表单并展示，按需自动执行
+ * @param params - 网页传入的自动登录参数
+ */
+async function applyAutoLoginParams(params: AutoLoginParams) {
+  console.log('[自动登录] 应用网页传入的参数:', params)
+
+  if (typeof params.host === 'string') loginForm.host = params.host
+  if (typeof params.path === 'string') loginForm.path = params.path
+  if (typeof params.username === 'string') loginForm.username = params.username
+  if (typeof params.password === 'string') loginForm.password = params.password
+  if (typeof params.usernameId === 'string') loginForm.usernameId = params.usernameId
+  if (typeof params.passwordId === 'string') loginForm.passwordId = params.passwordId
+  if (typeof params.incognito === 'boolean') loginForm.incognito = params.incognito
+
+  invokedFromWeb.value = true
+
+  if (params.autoConfirm) {
+    setLoginStatus('已接收网页参数，自动执行中...')
+    // 稍等片刻，让表单先渲染出来
+    await sleep(300)
+    autoLogin()
+  } else {
+    setLoginStatus('已载入网页传入的参数，点击「确定」开始执行')
+  }
+}
+
+/**
+ * 把执行结果回传给发起请求的网页
+ * @param success - 是否成功
+ * @param message - 结果说明
+ */
+async function reportResult(success: boolean, message: string) {
+  if (!invokedFromWeb.value) return
+  try {
+    await chrome.runtime.sendMessage({ type: 'AUTO_LOGIN_RESULT', payload: { success, message } })
+    console.log('[自动登录] 结果已回传:', success, message)
+  } catch (error) {
+    console.warn('[自动登录] 结果回传失败:', error)
+  }
+}
 
 /**
  * 更新界面单行日志：同时打印到扩展控制台，并在内容超出时自动滚动到最新
@@ -216,19 +342,35 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+/** 主机当前协议：http / https，未填写协议时为空串 */
+const hostProtocol = computed(() => {
+  const matched = loginForm.host.trim().match(/^(https?):\/\//i)
+  return matched ? matched[1].toLowerCase() : ''
+})
+
 /**
- * 拼接主机与路径，主机缺少协议时补全 https://
- * @param host - 主机（可含协议与端口）
+ * 切换主机协议（只改前缀，不动主机与端口）
+ * @param protocol - http 或 https
+ */
+function switchProtocol(protocol: 'http' | 'https') {
+  const rest = loginForm.host.trim().replace(/^https?:\/\//i, '')
+  loginForm.host = `${protocol}://${rest}`
+}
+
+/**
+ * 拼接主机与路径
+ * 主机必须显式带上 http:// 或 https://，不做默认协议补全
+ * @param host - 主机（必须含协议，可含端口）
  * @param path - 路径（可不带前导 /）
  * @returns 规范化后的完整网址
  */
 function buildTargetUrl(host: string, path: string): string {
-  let base = (host || '').trim()
+  const base = (host || '').trim()
   if (!base) {
     throw new Error('请输入主机地址')
   }
   if (!/^https?:\/\//i.test(base)) {
-    base = 'https://' + base
+    throw new Error('主机地址需以 http:// 或 https:// 开头')
   }
 
   let suffix = (path || '').trim()
@@ -567,9 +709,12 @@ async function autoLogin() {
 
     setLoginStatus(`已自动输入${filled.join('、')}，可在目标页面点击登录`, 'success')
     console.log('[自动登录] ===== 执行成功 ===== 已输入:', filled.join('、'))
+    await reportResult(true, `已自动输入${filled.join('、')}`)
   } catch (error) {
-    setLoginStatus((error as Error).message || '自动登录失败', 'error')
+    const message = (error as Error).message || '自动登录失败'
+    setLoginStatus(message, 'error')
     console.error('[自动登录] ===== 执行失败 =====', error)
+    await reportResult(false, message)
   } finally {
     logging.value = false
   }

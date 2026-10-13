@@ -135,6 +135,13 @@ onMounted(async () => {
     activeTab.value = 'cookie'
     cookieTabRef.value?.fetchCookieData()
   }
+
+  // URL 指定的 Tab 优先级最高（网页调用时会带 tab=login）
+  const requestedTab = new URLSearchParams(window.location.search).get('tab')
+  if (requestedTab) {
+    console.log('[xindao] 按 URL 参数切换 Tab:', requestedTab)
+    activeTab.value = requestedTab
+  }
 })
 
 /**

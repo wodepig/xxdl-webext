@@ -4,6 +4,13 @@
  */
 // @ts-ignore
 import { http, HttpResponse, HttpError } from "./utils/http"
+import {
+  PENDING_AUTO_LOGIN_KEY,
+  AUTO_LOGIN_SOURCE_TAB_KEY,
+  PROJECT_PAGE_PATH,
+  type AutoLoginParams,
+  type AutoLoginResultPayload
+} from "./utils/auto-login"
 
 /**
  * 获取当前标签页
@@ -75,10 +82,143 @@ interface HttpRequestMessage {
   headers?: Record<string, string>
 }
 
+/** 自动登录悬浮窗口尺寸 */
+const AUTO_LOGIN_WINDOW_WIDTH = 500
+const AUTO_LOGIN_WINDOW_HEIGHT = 680
+
+/**
+ * 计算悬浮窗口位置：贴在当前浏览器窗口右上角
+ * @param createData - 窗口创建参数，会被就地修改
+ */
+async function applyFloatingPosition(createData: chrome.windows.CreateData): Promise<void> {
+  try {
+    const current = await chrome.windows.getLastFocused()
+    if (current.left !== undefined && current.top !== undefined && current.width !== undefined) {
+      createData.left = Math.max(0, current.left + current.width - AUTO_LOGIN_WINDOW_WIDTH - 24)
+      createData.top = Math.max(0, current.top + 24)
+    }
+  } catch (error) {
+    console.warn('[background] 计算悬浮窗口位置失败，使用默认位置:', error)
+  }
+}
+
+/**
+ * 通知操作页重新读取待执行参数
+ * @param tabId - 操作页标签页 ID
+ */
+function notifyAutoLoginParams(tabId: number) {
+  chrome.tabs.sendMessage(tabId, { type: 'AUTO_LOGIN_PARAMS' }).catch(() => {
+    // 页面监听尚未挂载时忽略，页面挂载后会自行读取
+  })
+}
+
+/**
+ * 打开或激活自动登录悬浮窗口
+ * 已是悬浮窗口则复用；若操作页开在普通标签页里，则迁移成悬浮窗口，不再留标签页
+ */
+async function openAutoLoginPage(): Promise<void> {
+  const pageUrl = chrome.runtime.getURL(PROJECT_PAGE_PATH)
+  const allTabs = await chrome.tabs.query({})
+  const existing = allTabs.find(tab => tab.url?.startsWith(pageUrl))
+
+  if (existing?.id !== undefined && existing.windowId !== undefined) {
+    const win = await chrome.windows.get(existing.windowId).catch(() => null)
+
+    // 已经是悬浮窗口：直接聚焦并刷新参数
+    if (win?.type === 'popup') {
+      console.log('[background] 复用已存在的悬浮窗口:', existing.id)
+      await chrome.tabs.update(existing.id, { active: true })
+      await chrome.windows.update(existing.windowId, { focused: true })
+      notifyAutoLoginParams(existing.id)
+      return
+    }
+
+    // 开在普通标签页里：迁移为悬浮窗口，而不是激活标签页
+    console.log('[background] 将标签页迁移为悬浮窗口:', existing.id, ', 窗口类型 =', win?.type)
+    const migrateData: chrome.windows.CreateData = {
+      tabId: existing.id,
+      type: 'popup',
+      width: AUTO_LOGIN_WINDOW_WIDTH,
+      height: AUTO_LOGIN_WINDOW_HEIGHT,
+      focused: true
+    }
+    await applyFloatingPosition(migrateData)
+    try {
+      await chrome.windows.create(migrateData)
+      notifyAutoLoginParams(existing.id)
+      return
+    } catch (error) {
+      console.warn('[background] 迁移为悬浮窗口失败，改为新建:', error)
+    }
+  }
+
+  // 不存在则新建悬浮窗口
+  const url = `${pageUrl}?fileName=xindao&tab=login`
+  const createData: chrome.windows.CreateData = {
+    url,
+    type: 'popup',
+    width: AUTO_LOGIN_WINDOW_WIDTH,
+    height: AUTO_LOGIN_WINDOW_HEIGHT,
+    focused: true
+  }
+  await applyFloatingPosition(createData)
+  console.log('[background] 打开自动登录悬浮窗口:', createData)
+  await chrome.windows.create(createData)
+}
+
+/**
+ * 把自动登录执行结果回传给发起请求的网页
+ * @param payload - 执行结果
+ */
+async function forwardAutoLoginResult(payload: AutoLoginResultPayload): Promise<void> {
+  const stored = await chrome.storage.local.get(AUTO_LOGIN_SOURCE_TAB_KEY)
+  const tabId = stored[AUTO_LOGIN_SOURCE_TAB_KEY] as number | undefined
+
+  // 结果只回传一次，避免手动执行时误发给上一次的网页
+  await chrome.storage.local.remove(AUTO_LOGIN_SOURCE_TAB_KEY)
+
+  if (tabId === undefined) {
+    console.log('[background] 无请求来源标签页，跳过结果回传')
+    return
+  }
+
+  try {
+    await chrome.tabs.sendMessage(tabId, { type: 'AUTO_LOGIN_RESULT', payload })
+    console.log('[background] 执行结果已回传:', tabId, payload)
+  } catch (error) {
+    console.warn('[background] 结果回传失败(网页可能已关闭):', error)
+  }
+}
+
 /**
  * 监听来自其他页面的消息
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // 网页触发自动登录
+  if (request.type === 'AUTO_LOGIN_REQUEST') {
+    const payload = request.payload as AutoLoginParams
+    const sourceTabId = sender.tab?.id
+    console.log('[background] 收到自动登录请求, 来源标签页:', sourceTabId, payload)
+
+    chrome.storage.local
+      .set({
+        [PENDING_AUTO_LOGIN_KEY]: payload,
+        [AUTO_LOGIN_SOURCE_TAB_KEY]: sourceTabId
+      })
+      .then(() => openAutoLoginPage())
+      .then(() => sendResponse({ success: true }))
+      .catch(error => sendResponse({ success: false, error: error.message }))
+    return true
+  }
+
+  // 操作页回传执行结果
+  if (request.type === 'AUTO_LOGIN_RESULT') {
+    forwardAutoLoginResult(request.payload as AutoLoginResultPayload)
+      .then(() => sendResponse({ success: true }))
+      .catch(error => sendResponse({ success: false, error: error.message }))
+    return true
+  }
+
   // 获取 Cookies（通过 background 脚本）
   if (request.type === 'GET_COOKIES_BG') {
     getCookies()
