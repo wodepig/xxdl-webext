@@ -58,6 +58,25 @@
         留空则自动查找页面中的用户名/密码输入框，也可填 #id 或 CSS 选择器
       </p>
 
+      <!-- 验证码 -->
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text text-xs">验证码图片选择器</span>
+        </label>
+        <input v-model="loginForm.captchaSelector" type="text" placeholder="//*[@id=&quot;logins&quot;]/.../img"
+          class="input input-bordered input-sm w-full" />
+      </div>
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text text-xs">验证码输入框选择器</span>
+        </label>
+        <input v-model="loginForm.captchaInputSelector" type="text" placeholder="留空则自动查找"
+          class="input input-bordered input-sm w-full" />
+      </div>
+      <p class="text-xs text-base-content/50 -mt-1">
+        支持 XPath（以 / 开头）与 CSS 选择器；验证码图片选择器留空则不自动打码
+      </p>
+
       <!-- 账号 -->
       <div class="form-control">
         <label class="label py-1">
@@ -182,6 +201,26 @@ interface FillLoginResult {
   pwdFound: boolean
 }
 
+/** 打码注入脚本入参 */
+interface CaptchaPayload {
+  /** 验证码图片选择器（XPath 或 CSS） */
+  captchaSelector: string
+  /** 验证码输入框选择器（留空则自动查找） */
+  inputSelector: string
+  /** 识别类型：math 算术 / text 文字 */
+  type: 'math' | 'text'
+}
+
+/** 打码结果 */
+interface CaptchaResult {
+  /** 是否成功 */
+  success: boolean
+  /** 结果说明 */
+  message: string
+  /** 识别出的文本 */
+  text?: string
+}
+
 /** 打开页面后的目标信息 */
 interface LoginTarget {
   /** 标签页 ID */
@@ -204,6 +243,10 @@ const loginForm = reactive({
   usernameId: '#userName',
   /** 密码输入框元素 id（支持 #id 或 CSS 选择器，留空则自动查找） */
   passwordId: '#password',
+  /** 验证码图片选择器（支持 XPath 与 CSS 选择器，留空则不自动打码） */
+  captchaSelector: '//*[@id="logins"]/div[1]/form/div[3]/div/div/div/div/div/div/img',
+  /** 验证码输入框选择器（留空则从图片向上自动查找） */
+  captchaInputSelector: '',
   /** 是否使用无痕窗口打开 */
   incognito: false
 })
@@ -662,6 +705,223 @@ async function fillLoginInputs(tabId: number, maxAttempts = 10): Promise<FillLog
 }
 
 /**
+ * 注入脚本：识别验证码并回填输入框，同时在验证码图片同级注入「重打」按钮
+ * 注意：该函数会被序列化后注入目标页面执行，不能引用外部作用域变量
+ * @param payload - 选择器与识别类型
+ * @returns 打码结果
+ */
+async function injectCaptchaFlow(payload: CaptchaPayload): Promise<CaptchaResult> {
+  /** 以 / 或 ( 开头视为 XPath */
+  const isXPath = (selector: string) => selector.startsWith('/') || selector.startsWith('(')
+
+  /** 按选择器查找元素，兼容 XPath 与 CSS */
+  const findElement = (selector: string): Element | null => {
+    const value = (selector || '').trim()
+    if (!value) return null
+
+    if (isXPath(value)) {
+      try {
+        const result = document.evaluate(value, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+        return (result.singleNodeValue as Element) || null
+      } catch {
+        return null
+      }
+    }
+
+    try {
+      return document.querySelector(value)
+    } catch {
+      return null
+    }
+  }
+
+  /** 给图片铺白色背景后重新编码为 PNG data URI */
+  const withWhiteBackground = async (src: string): Promise<string> => {
+    const img = new Image()
+    img.src = src
+    await new Promise<void>((resolve, reject) => {
+      if (img.complete && img.naturalWidth > 0) {
+        resolve()
+        return
+      }
+      img.onload = () => resolve()
+      img.onerror = () => reject(new Error('验证码图片加载失败'))
+    })
+
+    const canvas = document.createElement('canvas')
+    canvas.width = img.naturalWidth || 120
+    canvas.height = img.naturalHeight || 40
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) throw new Error('无法创建画布')
+
+    // 白色背景：透明底验证码铺白底后更贴近页面真实观感
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(img, 0, 0)
+
+    return canvas.toDataURL('image/png')
+  }
+
+  /** 查找验证码输入框：优先用配置的选择器，否则从图片向上逐层找 */
+  const findInput = (img: HTMLImageElement): HTMLInputElement | null => {
+    const configured = findElement(payload.inputSelector)
+    if (configured instanceof HTMLInputElement) return configured
+
+    const candidates: HTMLInputElement[] = []
+    let scope: Element | null = img.parentElement
+    for (let depth = 0; depth < 4 && scope; depth++) {
+      const inputs = Array.from(scope.querySelectorAll('input'))
+      for (const el of inputs) {
+        if (!(el instanceof HTMLInputElement)) continue
+        const type = (el.type || 'text').toLowerCase()
+        if (el.disabled || el.readOnly) continue
+        if (type === 'password' || type === 'hidden' || type === 'checkbox' || type === 'radio') continue
+        if (!candidates.includes(el)) candidates.push(el)
+      }
+      scope = scope.parentElement
+    }
+
+    // 优先 id / name / placeholder 带验证码关键词的输入框，避免误填到用户名框
+    const keyword = /captcha|verify|yzm|checkcode|vcode|code/i
+    const matched = candidates.find(el => keyword.test(`${el.id} ${el.name} ${el.placeholder || ''}`))
+    return matched || candidates[0] || null
+  }
+
+  /** 赋值并派发事件，兼容受控组件 */
+  const setInputValue = (el: HTMLInputElement, value: string) => {
+    el.focus()
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value')
+    if (descriptor && typeof descriptor.set === 'function') {
+      descriptor.set.call(el, value)
+    } else {
+      el.value = value
+    }
+    el.dispatchEvent(new Event('input', { bubbles: true }))
+    el.dispatchEvent(new Event('change', { bubbles: true }))
+  }
+
+  /** 识别一次并回填输入框 */
+  const recognize = async (): Promise<string> => {
+    const element = findElement(payload.captchaSelector)
+    if (!(element instanceof HTMLImageElement)) {
+      throw new Error('未找到验证码图片元素')
+    }
+    if (!element.src) {
+      throw new Error('验证码图片地址为空')
+    }
+
+    const image = await withWhiteBackground(element.src)
+
+    const response = await chrome.runtime.sendMessage({
+      type: 'CAPTCHA_OCR',
+      payload: { image, type: payload.type }
+    })
+    if (!response || !response.success) {
+      throw new Error((response && response.error) || '验证码识别失败')
+    }
+
+    const input = findInput(element)
+    if (!input) {
+      throw new Error('未找到验证码输入框')
+    }
+
+    setInputValue(input, String(response.data))
+    return String(response.data)
+  }
+
+  /** 在验证码图片同级注入「重打」按钮（仅一次） */
+  const ensureButton = (img: HTMLImageElement) => {
+    if (document.getElementById('xxdl-recaptcha-btn')) return
+
+    const btn = document.createElement('button')
+    btn.id = 'xxdl-recaptcha-btn'
+    btn.type = 'button'
+    btn.textContent = '重打'
+    btn.style.cssText =
+      'margin-left:6px;padding:2px 8px;font-size:12px;line-height:1.5;color:#fff;' +
+      'background:#2563eb;border:none;border-radius:4px;cursor:pointer;vertical-align:middle;'
+
+    btn.addEventListener('click', async (event) => {
+      event.preventDefault()
+      btn.disabled = true
+      btn.textContent = '识别中…'
+      try {
+        await recognize()
+        btn.textContent = '重打'
+      } catch (error) {
+        console.warn('[xxdl] 重打失败:', error)
+        btn.textContent = '失败'
+        setTimeout(() => {
+          btn.textContent = '重打'
+        }, 1500)
+      } finally {
+        btn.disabled = false
+      }
+    })
+
+    const parent = img.parentElement
+    if (parent) {
+      parent.insertBefore(btn, img.nextSibling)
+    }
+  }
+
+  try {
+    const text = await recognize()
+    const element = findElement(payload.captchaSelector)
+    if (element instanceof HTMLImageElement) {
+      ensureButton(element)
+    }
+    return { success: true, message: '识别成功', text }
+  } catch (error) {
+    return { success: false, message: (error as Error).message || '识别失败' }
+  }
+}
+
+/**
+ * 自动打码：注入脚本采集验证码、调用打码服务并回填
+ * @param tabId - 目标标签页 ID
+ * @param pageUrl - 目标页面地址，用于判断识别类型
+ * @param maxAttempts - 最大重试次数（等待验证码渲染）
+ */
+async function fillCaptcha(tabId: number, pageUrl: string, maxAttempts = 6): Promise<CaptchaResult> {
+  const payload: CaptchaPayload = {
+    captchaSelector: loginForm.captchaSelector.trim(),
+    inputSelector: loginForm.captchaInputSelector.trim(),
+    // 只要地址包含 edu.seentao.com 就按算术验证码识别，其余按文字验证码
+    type: pageUrl.includes('edu.seentao.com') ? 'math' : 'text'
+  }
+
+  console.log('[自动登录] 开始打码, 参数:', payload)
+
+  let result: CaptchaResult = { success: false, message: '未执行' }
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const injections = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: injectCaptchaFlow,
+        args: [payload]
+      })
+      const current = injections[0]?.result as CaptchaResult | undefined
+      if (current?.success) {
+        console.log('[自动登录] 打码成功:', current.text)
+        return current
+      }
+      if (current) {
+        result = current
+      }
+    } catch (error) {
+      result = { success: false, message: (error as Error).message || '注入失败' }
+    }
+    console.warn('[自动登录] 第', attempt, '/', maxAttempts, '次打码失败:', result.message)
+    if (attempt < maxAttempts) {
+      await sleep(600)
+    }
+  }
+  return result
+}
+
+/**
  * 自动登录：打开网址并填充账号密码
  */
 async function autoLogin() {
@@ -707,9 +967,20 @@ async function autoLogin() {
       throw new Error('未找到用户名/密码输入框，请检查元素 id 或页面结构')
     }
 
-    setLoginStatus(`已自动输入${filled.join('、')}，可在目标页面点击登录`, 'success')
-    console.log('[自动登录] ===== 执行成功 ===== 已输入:', filled.join('、'))
-    await reportResult(true, `已自动输入${filled.join('、')}`)
+    // 账号密码填好后尝试自动打码（配置了验证码选择器才执行）
+    let captchaNote = ''
+    let captchaFailed = false
+    if (loginForm.captchaSelector.trim()) {
+      setLoginStatus('正在识别验证码...')
+      const captcha = await fillCaptcha(target.tabId, url)
+      captchaFailed = !captcha.success
+      captchaNote = captcha.success ? `，验证码 ${captcha.text}` : `，验证码识别失败：${captcha.message}`
+    }
+
+    const summary = `已自动输入${filled.join('、')}${captchaNote}`
+    setLoginStatus(summary + '，可在目标页面点击登录', captchaFailed ? 'error' : 'success')
+    console.log('[自动登录] ===== 执行成功 =====', summary)
+    await reportResult(!captchaFailed, summary)
   } catch (error) {
     const message = (error as Error).message || '自动登录失败'
     setLoginStatus(message, 'error')

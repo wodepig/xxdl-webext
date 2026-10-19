@@ -4,6 +4,8 @@
  */
 // @ts-ignore
 import { http, HttpResponse, HttpError } from "./utils/http"
+import { Storage } from "@plasmohq/storage"
+import { solveCaptcha, type CaptchaType } from "./utils/captcha"
 import {
   PENDING_AUTO_LOGIN_KEY,
   AUTO_LOGIN_SOURCE_TAB_KEY,
@@ -11,6 +13,9 @@ import {
   type AutoLoginParams,
   type AutoLoginResultPayload
 } from "./utils/auto-login"
+
+/** 扩展配置存储（与设置页共用同一存储区） */
+const appStorage = new Storage()
 
 /**
  * 获取当前标签页
@@ -191,6 +196,25 @@ async function forwardAutoLoginResult(payload: AutoLoginResultPayload): Promise<
 }
 
 /**
+ * 处理验证码识别请求（图片由页面注入脚本采集，请求在此发出以规避页面 CORS/CSP）
+ * @param payload - 图片 base64 与识别类型
+ * @returns 识别结果文本
+ */
+async function handleCaptchaOcr(payload: { image: string; type?: CaptchaType }): Promise<string> {
+  const ocrBaseUrl = await appStorage.get<string>("ocrUrl")
+  if (!ocrBaseUrl) {
+    throw new Error("未配置打码服务地址，请到设置页填写 OCR 地址")
+  }
+
+  const type: CaptchaType = payload.type === "math" ? "math" : "text"
+  console.log("[background] 验证码识别, 类型 =", type, ", 服务 =", ocrBaseUrl)
+
+  const text = await solveCaptcha(ocrBaseUrl, type, payload.image)
+  console.log("[background] 验证码识别结果:", text)
+  return text
+}
+
+/**
  * 监听来自其他页面的消息
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -215,6 +239,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'AUTO_LOGIN_RESULT') {
     forwardAutoLoginResult(request.payload as AutoLoginResultPayload)
       .then(() => sendResponse({ success: true }))
+      .catch(error => sendResponse({ success: false, error: error.message }))
+    return true
+  }
+
+  // 验证码识别（由注入到目标页面的脚本发起）
+  if (request.type === 'CAPTCHA_OCR') {
+    handleCaptchaOcr(request.payload)
+      .then(text => sendResponse({ success: true, data: text }))
       .catch(error => sendResponse({ success: false, error: error.message }))
     return true
   }

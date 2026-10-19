@@ -163,6 +163,44 @@
       </div>
     </div>
 
+    <!-- OCR 打码服务配置 -->
+    <div class="card bg-base-100 shadow-sm mb-4">
+      <div class="card-body">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-info" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 12h2a2 2 0 002-2v-2M8 12h8" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h2 class="card-title text-base">打码服务</h2>
+            <p class="text-sm text-base-content/70">登录验证码自动识别，留空则不启用</p>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">OCR 地址</span>
+          </label>
+          <div class="flex items-center gap-2">
+            <input type="url" v-model="ocrUrl" placeholder="http://127.0.0.1:7788"
+              class="input input-bordered flex-1" />
+            <button @click="testOcr" :disabled="testingOcr" class="btn btn-outline btn-sm">
+              <span v-if="testingOcr" class="loading loading-spinner loading-xs"></span>
+              {{ testingOcr ? '测试中' : '测试连接' }}
+            </button>
+          </div>
+          <label class="label">
+            <span class="label-text-alt text-base-content/50">打码服务根地址，识别接口为 {地址}/captcha/ocr</span>
+          </label>
+          <span v-if="ocrStatus" class="badge"
+            :class="ocrStatusType === 'success' ? 'badge-success' : 'badge-error'">{{ ocrStatus }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- 保存按钮 -->
     <button @click="saveSettings" class="btn btn-primary w-full">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,6 +209,21 @@
       </svg>
       {{ t('saveSettings') }}
     </button>
+
+    <!-- 连接测试失败时的二次确认 -->
+    <div v-if="showSaveConfirm" class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-base">后端连接测试失败</h3>
+        <p class="py-3 text-sm text-base-content/70">
+          {{ saveFailureReason }}<br />
+          是否仍然保存当前配置？
+        </p>
+        <div class="modal-action">
+          <button class="btn btn-ghost btn-sm" @click="showSaveConfirm = false">取消</button>
+          <button class="btn btn-warning btn-sm" @click="confirmSaveAnyway">仍然保存</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Toast 提示 -->
     <Toast ref="toastRef" />
@@ -190,6 +243,7 @@ import { t } from "~/utils/i18n"
 import Toast from "~/components/Toast.vue"
 import HeaderActions from "~/components/HeaderActions.vue"
 import { httpClient } from "~/utils/http-client"
+import { buildCaptchaUrl } from "~/utils/captcha"
 import { applyTheme as applyThemeToDoc } from "~/composables/useTheme"
 
 // ==================== Storage 实例 ====================
@@ -219,6 +273,18 @@ const connectionStatusType = ref('')
 const toastRef = ref<InstanceType<typeof Toast>>()
 /** 当前选中的主题 */
 const selectedTheme = ref('light')
+/** 打码服务（OCR）根地址 */
+const ocrUrl = ref('')
+/** 是否正在测试打码服务连接 */
+const testingOcr = ref(false)
+/** 打码服务连接状态文本 */
+const ocrStatus = ref('')
+/** 打码服务连接状态类型：success | error */
+const ocrStatusType = ref('')
+/** 是否显示「连接测试失败，是否仍然保存」确认框 */
+const showSaveConfirm = ref(false)
+/** 后端连接测试失败的原因（展示在确认框中） */
+const saveFailureReason = ref('')
 
 // ==================== DaisyUI 35 个内置主题 ====================
 const themes = [
@@ -256,6 +322,8 @@ async function loadSettings() {
   apiPath.value = await storage.get('apiPath') || ''
   // 去掉开头的 /，方便用户输入
   apiPathInput.value = apiPath.value.replace(/^\//, '')
+  // 加载打码服务地址
+  ocrUrl.value = await storage.get('ocrUrl') || ''
   // 加载主题设置
   selectedTheme.value = await storage.get('theme') || 'light'
 }
@@ -371,9 +439,52 @@ async function testConnection() {
 }
 
 /**
+ * 测试打码服务连接
+ * 调用 /health 探活，结果展示在状态 badge 中
+ */
+async function testOcr() {
+  const url = ocrUrl.value.trim()
+  if (!url) {
+    ocrStatus.value = '请输入 OCR 地址'
+    ocrStatusType.value = 'error'
+    return
+  }
+
+  try {
+    new URL(url)
+  } catch {
+    ocrStatus.value = '地址格式不正确'
+    ocrStatusType.value = 'error'
+    return
+  }
+
+  testingOcr.value = true
+  ocrStatus.value = ''
+
+  try {
+    // 通过 background 代理请求，绕过 CORS
+    const result = await httpClient.get<{ code: number; msg: string; data: { version?: string } | null }>(
+      buildCaptchaUrl(url, '/health')
+    )
+
+    if (result.data.code === 0) {
+      ocrStatus.value = `连接成功${result.data.data?.version ? ' v' + result.data.data.version : ''}`
+      ocrStatusType.value = 'success'
+    } else {
+      ocrStatus.value = result.data.msg || '连接失败'
+      ocrStatusType.value = 'error'
+    }
+  } catch (error) {
+    ocrStatus.value = '连接失败'
+    ocrStatusType.value = 'error'
+  } finally {
+    testingOcr.value = false
+  }
+}
+
+/**
  * 保存设置
- * 保存前会自动测试连接，只有连接成功才会保存
- * 使用 Toast 显示操作结果
+ * 保存前会先测试后端连接；测试失败时弹出二次确认，允许用户仍然保存
  */
 async function saveSettings() {
   const url = backendUrl.value.trim()
@@ -398,8 +509,9 @@ async function saveSettings() {
     return
   }
 
-  // 先测试连接，确保配置有效（通过 Background 代理，绕过 CORS）
+  // 先测试连接（通过 Background 代理，绕过 CORS）
   testing.value = true
+  let failureReason = ''
   try {
     const testUrl = getTestUrl(url)
     const result = await httpClient.post<{ code: number; msg: string; data: string | null }>(testUrl, {
@@ -408,20 +520,40 @@ async function saveSettings() {
     })
 
     if (result.data.code !== 200) {
-      toastRef.value?.show({ message: result.data.msg || t('connectionFailed'), type: 'error' })
-      return
+      failureReason = result.data.msg || t('connectionFailed')
     }
   } catch (error) {
-    toastRef.value?.show({ message: t('connectionFailed'), type: 'error' })
-    return
+    failureReason = t('connectionFailed')
   } finally {
     testing.value = false
   }
 
-  // 连接成功后保存设置到 Storage
-  await storage.set('backendUrl', url)
-  await storage.set('apiKey', key)
+  // 测试失败：不直接放弃，弹确认框让用户决定是否仍然保存
+  if (failureReason) {
+    saveFailureReason.value = failureReason
+    showSaveConfirm.value = true
+    return
+  }
+
+  await persistSettings()
+}
+
+/**
+ * 确认在连接测试失败的情况下仍然保存
+ */
+async function confirmSaveAnyway() {
+  showSaveConfirm.value = false
+  await persistSettings()
+}
+
+/**
+ * 将当前表单内容写入 Storage
+ */
+async function persistSettings() {
+  await storage.set('backendUrl', backendUrl.value.trim())
+  await storage.set('apiKey', apiKey.value.trim())
   await storage.set('apiPath', apiPath.value)
+  await storage.set('ocrUrl', ocrUrl.value.trim())
 
   toastRef.value?.show({ message: t('settingsSaved'), type: 'success' })
 }
