@@ -35,6 +35,10 @@ export interface AutoLoginParams {
   usernameId?: string
   /** 密码输入框元素 id，留空自动查找 */
   passwordId?: string
+  /** 验证码图片选择器（支持 XPath 与 CSS），不传则沿用表单默认值 */
+  captchaSelector?: string
+  /** 验证码输入框选择器，留空则自动查找 */
+  captchaInputSelector?: string
   /** 是否使用无痕窗口打开，默认 false */
   incognito?: boolean
   /** 是否自动点击「确定」，默认 false（仅回填参数等待手动执行） */

@@ -167,6 +167,7 @@
           <li><code class="font-mono text-primary">host</code>：目标主机，<span class="text-warning">必须带 http:// 或 https://</span>；<code class="font-mono text-primary">path</code>：目标路径</li>
           <li><code class="font-mono text-primary">username</code> / <code class="font-mono text-primary">password</code>：账号与密码</li>
           <li><code class="font-mono text-primary">usernameId</code> / <code class="font-mono text-primary">passwordId</code>：输入框元素 id，留空自动查找</li>
+          <li><code class="font-mono text-primary">captchaSelector</code> / <code class="font-mono text-primary">captchaInputSelector</code>：验证码图片与输入框选择器，支持 XPath 与 CSS，不传则沿用表单默认值</li>
           <li><code class="font-mono text-primary">incognito</code>：是否用无痕窗口打开，默认 false</li>
           <li><code class="font-mono text-primary">autoConfirm</code>：是否自动点击确定，默认 false（只回填参数）</li>
         </ul>
@@ -261,6 +262,8 @@ const callExample = `window.postMessage({
     password: '123456',
     usernameId: '#userName',
     passwordId: '#password',
+    captchaSelector: '//*[@id="logins"]/div[1]/form/div[3]/div/div/div/div/div/div/img',
+    captchaInputSelector: '',
     incognito: false,
     autoConfirm: true
   }
@@ -331,6 +334,8 @@ async function applyAutoLoginParams(params: AutoLoginParams) {
   if (typeof params.password === 'string') loginForm.password = params.password
   if (typeof params.usernameId === 'string') loginForm.usernameId = params.usernameId
   if (typeof params.passwordId === 'string') loginForm.passwordId = params.passwordId
+  if (typeof params.captchaSelector === 'string') loginForm.captchaSelector = params.captchaSelector
+  if (typeof params.captchaInputSelector === 'string') loginForm.captchaInputSelector = params.captchaInputSelector
   if (typeof params.incognito === 'boolean') loginForm.incognito = params.incognito
 
   invokedFromWeb.value = true
@@ -539,7 +544,7 @@ function waitTabComplete(tabId: number, timeout = 45000): Promise<void> {
       }
     }
 
-    const listener = (id: number, info: chrome.tabs.TabChangeInfo) => {
+    const listener = (id: number, info: chrome.tabs.OnUpdatedInfo) => {
       if (id !== tabId) return
       console.log('[自动登录] tab 状态更新: status =', info.status)
       if (info.status === 'complete') {
