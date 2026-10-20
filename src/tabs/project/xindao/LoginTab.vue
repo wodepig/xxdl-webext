@@ -735,41 +735,107 @@ async function injectCaptchaFlow(payload: CaptchaPayload): Promise<CaptchaResult
     }
   }
 
-  /** 给图片铺白色背景后重新编码为 PNG data URI */
-  const withWhiteBackground = async (src: string): Promise<string> => {
-    const img = new Image()
-    img.src = src
-    await new Promise<void>((resolve, reject) => {
-      if (img.complete && img.naturalWidth > 0) {
-        resolve()
-        return
+  /**
+   * 从验证码元素中提取图片数据
+   * 支持 img（currentSrc / src / srcset）、canvas、容器内部的 canvas/img、CSS 背景图
+   * @returns 图片地址（data URI 或 http URL），无法提取时返回 null
+   */
+  const extractImageSource = (element: Element): string | null => {
+    /** canvas 导出为 PNG data URI（画布被跨域图片污染或尺寸为 0 时返回 null） */
+    const canvasToDataUrl = (canvas: HTMLCanvasElement): string | null => {
+      try {
+        if (!canvas.width || !canvas.height) return null
+        return canvas.toDataURL('image/png')
+      } catch {
+        return null
       }
-      img.onload = () => resolve()
-      img.onerror = () => reject(new Error('验证码图片加载失败'))
-    })
+    }
 
-    const canvas = document.createElement('canvas')
-    canvas.width = img.naturalWidth || 120
-    canvas.height = img.naturalHeight || 40
+    // 1. 元素本身就是 canvas
+    if (element instanceof HTMLCanvasElement) {
+      const dataUrl = canvasToDataUrl(element)
+      if (dataUrl) return dataUrl
+    }
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('无法创建画布')
+    // 2. 元素是 img：currentSrc 为实际生效地址（srcset 场景更准确）
+    if (element instanceof HTMLImageElement) {
+      const src = element.currentSrc || element.src
+      if (src) return src
 
-    // 白色背景：透明底验证码铺白底后更贴近页面真实观感
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(img, 0, 0)
+      const srcset = element.getAttribute('srcset')
+      if (srcset) {
+        const first = srcset.split(',')[0].trim().split(/\s+/)[0]
+        if (first) return first
+      }
+    }
 
-    return canvas.toDataURL('image/png')
+    // 3. 选择器命中的是容器：内部找 canvas / img
+    const innerCanvas = element.querySelector('canvas')
+    if (innerCanvas instanceof HTMLCanvasElement) {
+      const dataUrl = canvasToDataUrl(innerCanvas)
+      if (dataUrl) return dataUrl
+    }
+
+    const innerImg = element.querySelector('img')
+    if (innerImg instanceof HTMLImageElement) {
+      const src = innerImg.currentSrc || innerImg.src
+      if (src) return src
+    }
+
+    // 4. CSS 背景图（形如 url("data:image/png;base64,...")）
+    try {
+      const background = getComputedStyle(element).backgroundImage
+      const matched = /url\(["']?(.+?)["']?\)/.exec(background)
+      if (matched && matched[1]) return matched[1]
+    } catch {
+      // 忽略样式读取失败
+    }
+
+    return null
   }
 
-  /** 查找验证码输入框：优先用配置的选择器，否则从图片向上逐层找 */
-  const findInput = (img: HTMLImageElement): HTMLInputElement | null => {
+  /** 给图片铺白色背景后重新编码为 PNG data URI；合成失败时回退为原图 */
+  const withWhiteBackground = async (src: string): Promise<string> => {
+    try {
+      const img = new Image()
+      // 允许跨域图片参与 canvas 绘制；服务端未返回 CORS 头时会加载失败并回退为原图
+      img.crossOrigin = 'anonymous'
+      img.src = src
+      await new Promise<void>((resolve, reject) => {
+        if (img.complete && img.naturalWidth > 0) {
+          resolve()
+          return
+        }
+        img.onload = () => resolve()
+        img.onerror = () => reject(new Error('验证码图片加载失败'))
+      })
+
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth || 120
+      canvas.height = img.naturalHeight || 40
+
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('无法创建画布')
+
+      // 白色背景：透明底验证码铺白底后更贴近页面真实观感
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(img, 0, 0)
+
+      return canvas.toDataURL('image/png')
+    } catch (error) {
+      console.warn('[xxdl] 白底合成失败，改用原图:', error)
+      return src
+    }
+  }
+
+  /** 查找验证码输入框：优先用配置的选择器，否则从验证码元素向上逐层找 */
+  const findInput = (target: Element): HTMLInputElement | null => {
     const configured = findElement(payload.inputSelector)
     if (configured instanceof HTMLInputElement) return configured
 
     const candidates: HTMLInputElement[] = []
-    let scope: Element | null = img.parentElement
+    let scope: Element | null = target.parentElement
     for (let depth = 0; depth < 4 && scope; depth++) {
       const inputs = Array.from(scope.querySelectorAll('input'))
       for (const el of inputs) {
@@ -804,14 +870,16 @@ async function injectCaptchaFlow(payload: CaptchaPayload): Promise<CaptchaResult
   /** 识别一次并回填输入框 */
   const recognize = async (): Promise<string> => {
     const element = findElement(payload.captchaSelector)
-    if (!(element instanceof HTMLImageElement)) {
-      throw new Error('未找到验证码图片元素')
-    }
-    if (!element.src) {
-      throw new Error('验证码图片地址为空')
+    if (!element) {
+      throw new Error('未找到验证码元素')
     }
 
-    const image = await withWhiteBackground(element.src)
+    const source = extractImageSource(element)
+    if (!source) {
+      throw new Error('验证码元素中没有可识别的图片')
+    }
+
+    const image = await withWhiteBackground(source)
 
     const response = await chrome.runtime.sendMessage({
       type: 'CAPTCHA_OCR',
@@ -830,8 +898,8 @@ async function injectCaptchaFlow(payload: CaptchaPayload): Promise<CaptchaResult
     return String(response.data)
   }
 
-  /** 在验证码图片同级注入「重打」按钮（仅一次） */
-  const ensureButton = (img: HTMLImageElement) => {
+  /** 在验证码元素同级注入「重打」按钮（仅一次） */
+  const ensureButton = (target: Element) => {
     if (document.getElementById('xxdl-recaptcha-btn')) return
 
     const btn = document.createElement('button')
@@ -860,16 +928,16 @@ async function injectCaptchaFlow(payload: CaptchaPayload): Promise<CaptchaResult
       }
     })
 
-    const parent = img.parentElement
+    const parent = target.parentElement
     if (parent) {
-      parent.insertBefore(btn, img.nextSibling)
+      parent.insertBefore(btn, target.nextSibling)
     }
   }
 
   try {
     const text = await recognize()
     const element = findElement(payload.captchaSelector)
-    if (element instanceof HTMLImageElement) {
+    if (element) {
       ensureButton(element)
     }
     return { success: true, message: '识别成功', text }
